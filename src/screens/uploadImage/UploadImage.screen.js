@@ -1,11 +1,12 @@
 import React, { useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Button, ScrollView, Text, View, Image } from 'react-native';
+import { ScrollView, Text, View, Image } from 'react-native';
 import * as ImagePicker from 'expo-image-picker';
 import { styles } from './styles/UploadImage.styles';
 import { globalStyles } from '../../styles/Global.styles';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import BottomBar from '../../components/common/BottomBar';
+import { Button } from 'react-native-paper';
 
 
 export default function UploadImageScreen({ navigation }) {
@@ -40,8 +41,14 @@ export default function UploadImageScreen({ navigation }) {
                         {t("upload_your_image")}
                     </Text>
                     <View style={styles.buttonContainer}>
-                        <Button color="#6D30ED"
-                            title={t("upload_image")} onPress={handleImagePick} />
+                        <Button
+                            buttonColor="#6D30ED"
+                            onPress={handleImagePick}
+                            textColor="white"
+
+                        >
+                            {t("upload_image")}
+                        </Button>
                     </View>
                     <View>
                         {
@@ -52,8 +59,11 @@ export default function UploadImageScreen({ navigation }) {
                                     ))}
                                 </View>
                                 <View style={styles.buttonContainer}>
-                                    <Button color="#6D30ED"
-                                        title={t("submit")} onPress={() => { navigation.navigate("ProceedFurther") }} />
+                                    <Button
+                                        buttonColor="#6D30ED"
+                                        textColor="white"
+                                        onPress={() => { navigation.navigate("ProceedFurther") }}>
+                                        {t("submit")}</Button>
                                 </View>
                             </>
                         }

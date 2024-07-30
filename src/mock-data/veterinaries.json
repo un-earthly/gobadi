@@ -1,0 +1,27 @@
+[
+    {
+        "id": "cow",
+        "label": "cow",
+        "placeholder": "number_of_cows"
+    },
+    {
+        "id": "fish",
+        "label": "fish",
+        "placeholder": "number_of_fishes"
+    },
+    {
+        "id": "goat",
+        "label": "goat",
+        "placeholder": "number_of_goats"
+    },
+    {
+        "id": "hen",
+        "label": "hen",
+        "placeholder": "number_of_hens"
+    },
+    {
+        "id": "duck",
+        "label": "duck",
+        "placeholder": "number_of_ducks"
+    }
+]

@@ -1,16 +1,28 @@
-import { Button, Image, SafeAreaView, Text, TextInput, TouchableOpacity, View } from "react-native";
+import { Image, Text, TextInput, TouchableOpacity, View } from "react-native";
 import { useTranslation } from "react-i18next";
 import { commonStyles } from "./styles/Common.styles";
+import { useEffect, useState } from "react";
+import { Button } from "react-native-paper";
+import { SafeAreaView } from "react-native-safe-area-context";
 
 export default function LoginScreen({ navigation }) {
-    const { t, i18n } = useTranslation();
+    const { t } = useTranslation();
+    const [loading, setLoading] = useState(false);
 
+    useEffect(() => {
+        setLoading(false);
+    }, []);
+
+    const handleLogin = () => {
+        setLoading(true);
+        setTimeout(() => {
+            setLoading(false);
+            navigation.navigate("Dashboard");
+        }, 2000);
+    };
     return (
         <SafeAreaView style={commonStyles.container}>
             <View style={commonStyles.wrapper}>
-                {/* <Text style={commonStyles.header}>
-                    {t("app_name")}
-                </Text> */}
                 <Image
                     source={require("../../../assets/adaptive-icon.png")}
                     style={{
@@ -41,10 +53,11 @@ export default function LoginScreen({ navigation }) {
                 </View>
                 <View style={commonStyles.btn_container}>
                     <Button
-                        onPress={() => navigation.navigate("Dashboard")}
-                        color="#6D30ED"
-                        title={t("login")}
-                    />
+                        onPress={handleLogin}
+                        buttonColor="#6D30ED"
+                        textColor="white"
+                        loading={loading}
+                    >{t("login")}</Button>
                 </View>
                 <View style={commonStyles.footer}>
                     <Text>
@@ -53,11 +66,7 @@ export default function LoginScreen({ navigation }) {
                     <TouchableOpacity onPress={() =>
                         navigation.navigate('Registration')
                     }>
-                        <Text style={{
-                            color: '#6D30ED',
-                            textDecorationLine: "underline",
-                            fontSize: 16
-                        }}>
+                        <Text style={commonStyles.link}>
                             {t("registration")}
                         </Text>
                     </TouchableOpacity>

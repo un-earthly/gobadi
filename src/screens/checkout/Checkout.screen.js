@@ -1,7 +1,7 @@
-import { Button, Image, ScrollView, StyleSheet, Text, TouchableOpacity, View } from "react-native";
+import { Image, ScrollView, Text, View } from "react-native";
 import { globalStyles } from "../../styles/Global.styles";
 import { useTranslation } from "react-i18next";
-import { RadioButton } from "react-native-paper";
+import { Button, RadioButton } from "react-native-paper";
 import { SafeAreaView } from 'react-native-safe-area-context';
 import BottomBar from "../../components/common/BottomBar";
 import AntDesign from '@expo/vector-icons/AntDesign';
@@ -52,7 +52,13 @@ export default function CheckoutScreen({ navigation }) {
             <View style={{
                 width: "90%"
             }}>
-                <Button onPress={() => navigation.navigate("ConsumerSchedule")} color="#6d30ed" title={t("proceed_to_pay")} />
+                <Button
+                    buttonColor="#6D30ED"
+                    textColor="white"
+                    onPress={() => navigation.navigate("ConsumerSchedule")}
+                >
+                    {t("proceed_to_pay")}
+                </Button>
             </View>
         </ScrollView>
         <BottomBar navigation={navigation} />

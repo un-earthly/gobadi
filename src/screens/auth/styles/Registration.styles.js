@@ -1,11 +1,12 @@
 import { StyleSheet } from "react-native";
 
 export const styles = StyleSheet.create({
-   
-  
+
+
     role_container: {
         flexDirection: "column",
-        marginVertical: 20
+        marginVertical: 20,
+        rowGap: 10
     },
     role_container_label: {
         fontSize: 16

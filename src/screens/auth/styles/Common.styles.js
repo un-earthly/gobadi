@@ -23,7 +23,7 @@ export const commonStyles = StyleSheet.create({
     },
     input_container: {
         direction: 'column',
-        marginVertical: 8
+        marginVertical: 8,
     },
     input: {
         borderColor: "#ccc",
@@ -44,5 +44,16 @@ export const commonStyles = StyleSheet.create({
         marginVertical: 12,
         flexDirection: "row",
         justifyContent: "center",
+    },
+    logo: {
+        height: 60,
+        width: "100%",
+        objectFit: "contain",
+        marginBottom: 20
+    },
+    link: {
+        color: '#6D30ED',
+        textDecorationLine: "underline",
+        fontSize: 16
     }
 })

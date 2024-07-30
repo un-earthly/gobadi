@@ -67,5 +67,10 @@
     "proceed_to_pay": "পরিশোধ করতে অগ্রসর হও ",
     "bkash": "বিকাশ",
     "nogod": "নগদ ",
-    "order_confirmation_page": "অর্ডার নিশ্চয়ন "
+    "order_confirmation_page": "অর্ডার নিশ্চয়ন ",
+    "number_of_cows": "গরুর সংখ্যা",
+    "number_of_goats": "ছাগলের সংখ্যা",
+    "number_of_hens": "মুরগির সংখ্যা",
+    "number_of_ducks": "হাঁসের সংখ্যা",
+    "number_of_fishes": "মাছের সংখ্যা"
 }

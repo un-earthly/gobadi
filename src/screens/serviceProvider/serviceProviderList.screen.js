@@ -1,6 +1,6 @@
-import { Button, Image, ScrollView, Text, View, StyleSheet } from "react-native";
+import { Image, ScrollView, Text, View } from "react-native";
 import { useTranslation } from "react-i18next";
-import { Checkbox } from "react-native-paper";
+import { Button, Checkbox } from "react-native-paper";
 import { useState } from "react";
 import { globalStyles } from "../../styles/Global.styles";
 import { SafeAreaView } from 'react-native-safe-area-context';
@@ -71,8 +71,14 @@ export function ServiceProviderListScreen({ navigation }) {
                         ))}
                     </View>
                     <View style={styles.submitButtonContainer}>
-                        <Button color="#6D30ED"
-                            onPress={() => navigation.navigate("Checkout")} title={t("submit")} />
+
+                        <Button
+                            buttonColor="#6D30ED"
+                            textColor="white"
+                            onPress={() => navigation.navigate("Checkout")} 
+                        >
+                            {t("submit")}
+                        </Button>
                     </View>
                 </View>
             </ScrollView>

@@ -1,10 +1,11 @@
-import { Button, ScrollView, Text, View } from "react-native";
+import { ScrollView, Text, View } from "react-native";
 import { styles } from "./styles/ProceedFurther.styles";
 import { useTranslation } from "react-i18next";
 import { Foundation } from '@expo/vector-icons';
 import { globalStyles } from "../../styles/Global.styles";
 import { SafeAreaView } from 'react-native-safe-area-context';
 import BottomBar from "../../components/common/BottomBar";
+import { Button } from "react-native-paper";
 
 export function ProceedFurtherScreen({ navigation }) {
     const { t } = useTranslation();
@@ -34,8 +35,8 @@ export function ProceedFurtherScreen({ navigation }) {
     return <SafeAreaView style={globalStyles.container}>
         <ScrollView>
             <View style={{
-                // padding: 10,
-                rowGap: 20
+                rowGap: 20,
+                paddingHorizontal: 10
             }}>
                 <View>
                     <Text style={{
@@ -64,8 +65,15 @@ export function ProceedFurtherScreen({ navigation }) {
                 <Text>
                     {t("proceed_confirmation")}
                 </Text>
-                <Button color="#6D30ED"
-                    onPress={() => navigation.navigate("ServiceProviderList")} title={t("step_forward")} />
+                <View>
+                    <Button
+                        buttonColor="#6D30ED"
+                        textColor="white"
+                        onPress={() => navigation.navigate("ServiceProviderList")}
+                    >
+                        {t("step_forward")}
+                    </Button>
+                </View>
             </View>
         </ScrollView>
         <BottomBar navigation={navigation} />
