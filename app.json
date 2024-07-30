@@ -1,7 +1,7 @@
 {
   "expo": {
-    "name": "gobadi-poshu",
-    "slug": "gobadi-poshu",
+    "name": "gobadi",
+    "slug": "gobadi",
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/icon.png",
@@ -12,16 +12,24 @@
       "backgroundColor": "#ffffff"
     },
     "ios": {
-      "supportsTablet": true
+      "supportsTablet": true,
+      "bundleIdentifier": "com.scorp1369.gobadi"
     },
     "android": {
       "adaptiveIcon": {
         "foregroundImage": "./assets/adaptive-icon.png",
         "backgroundColor": "#ffffff"
-      }
+      },
+      "package": "com.scorp1369.gobadi"
     },
     "web": {
       "favicon": "./assets/favicon.png"
-    }
+    },
+    "extra": {
+      "eas": {
+        "projectId": "be7d9709-ed48-4a19-a686-6a1658b4c127"
+      }
+    },
+    "owner": "scorp1369"
   }
 }
