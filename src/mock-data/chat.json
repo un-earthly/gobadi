@@ -1,0 +1,42 @@
+[
+    {
+        "_id": 1,
+        "text": "Hello, how can I assist you today?",
+        "createdAt": "2024-07-30T12:00:00Z",
+        "user": {
+            "_id": 2,
+            "name": "Service Provider",
+            "avatar": "https://randomuser.me/api/portraits/men/69.jpg"
+        }
+    },
+    {
+        "_id": 2,
+        "text": "Hi! I need help with my order.",
+        "createdAt": "2024-07-30T12:01:00Z",
+        "user": {
+            "_id": 1,
+            "name": "Service Consumer",
+            "avatar": "https://randomuser.me/api/portraits/men/29.jpg"
+        }
+    },
+    {
+        "_id": 3,
+        "text": "Sure, I can help with that. What seems to be the issue?",
+        "createdAt": "2024-07-30T12:02:00Z",
+        "user": {
+            "_id": 2,
+            "name": "Service Provider",
+            "avatar": "https://randomuser.me/api/portraits/men/69.jpg"
+        }
+    },
+    {
+        "_id": 4,
+        "text": "The item I received is not as described.",
+        "createdAt": "2024-07-30T12:03:00Z",
+        "user": {
+            "_id": 1,
+            "name": "Service Consumer",
+            "avatar": "https://randomuser.me/api/portraits/men/29.jpg"
+        }
+    }
+]

@@ -1,52 +1,25 @@
 import { StyleSheet } from "react-native";
 
-export const styles = StyleSheet.create({
-    messageContainer: {
+const styles = StyleSheet.create({
+    section: {
         flex: 1,
-        padding: 10,
+        width: '100%'
     },
-    messageBubble: {
-        marginVertical: 5,
-        padding: 10,
-        borderRadius: 10,
-        maxWidth: '70%',
-    },
-    userMessage: {
-        backgroundColor: '#DCF8C6',
-        alignSelf: 'flex-end',
-    },
-    botMessage: {
-        backgroundColor: '#ECECEC',
-        alignSelf: 'flex-start',
-    },
-    messageText: {
-        fontSize: 16,
-    },
-    inputContainer: {
-        flexDirection: 'row',
-        padding: 10,
-        borderTopWidth: 1,
-        borderColor: '#ECECEC',
-    },
-    textInput: {
-        flex: 1,
-        padding: 10,
-        borderWidth: 1,
-        borderColor: '#ECECEC',
-        borderRadius: 20,
-    },
-    sendButton: {
-        justifyContent: 'center',
+    header: {
         alignItems: 'center',
-        marginLeft: 10,
-        paddingHorizontal: 20,
-        backgroundColor: '#007AFF',
-        borderRadius: 20,
+        justifyContent: "flex-start",
+        padding: 10,
     },
-    sendButtonText: {
-        color: '#FFF',
-        fontSize: 16,
+    avatar: {
+        width: 50,
+        height: 50,
+        borderRadius: 25,
+    },
+    userName: {
+        marginLeft: 10,
+        fontSize: 18,
+        color: '#333',
     },
 });
 
-
+export default styles;

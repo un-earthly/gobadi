@@ -1,25 +1,15 @@
 import { useTranslation } from "react-i18next";
-import { Image, Text, View, StyleSheet, ScrollView } from "react-native";
+import { Image, Text, View, ScrollView } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
-import AntDesign from '@expo/vector-icons/AntDesign';
 import { Feather } from '@expo/vector-icons';
 import { globalStyles } from "../../styles/Global.styles";
-import { styles } from "./styles/consumerScheduleScreen.styles";
+import { styles } from "./styles/consumerSchedule.styles";
+import AntDesign from '@expo/vector-icons/AntDesign';
 import BottomBar from "../../components/common/BottomBar";
+import IconRow from "../../components/ScreenBasedComponent/ConsumerSchedule/IconRow";
+import InfoRow from "../../components/ScreenBasedComponent/ConsumerSchedule/InfoRow";
 
-const InfoRow = ({ label, value }) => (
-    <View style={styles.infoRow}>
-        <Text style={styles.infoLabel}>{label}</Text>
-        <Text style={styles.infoValue}>{value}</Text>
-    </View>
-);
 
-const IconRow = ({ icon: IconComponent, label, name }) => (
-    <View style={styles.iconRow}>
-        <IconComponent size={24} color="black" name={name} />
-        <Text style={styles.iconLabel}>{label}</Text>
-    </View>
-);
 
 const ConsumerScheduleScreen = ({ navigation }) => {
     const { t } = useTranslation();
@@ -58,7 +48,6 @@ const ConsumerScheduleScreen = ({ navigation }) => {
                         </View>
                     </View>
                     <View style={styles.contactSection}>
-
                         <View style={styles.section}>
                             <IconRow icon={Feather} label={t("call")} name="phone-call" />
                             <IconRow icon={AntDesign} label={t("video_call")} name="videocamera" />

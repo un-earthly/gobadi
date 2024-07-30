@@ -4,7 +4,6 @@ import { NavigationContainer } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import RegistrationScreen from './src/screens/auth/Registration.screen';
 import LoginScreen from './src/screens/auth/Login.screen';
-import HomeScreen from "./src/screens/menu/Menu.screen"
 import UploadImageScreen from './src/screens/uploadImage/UploadImage.screen';
 import { ProceedFurtherScreen } from './src/screens/proceedFurther/ProceedFurther.screen';
 import { ServiceProviderListScreen } from './src/screens/serviceProvider/serviceProviderList.screen';
@@ -14,7 +13,7 @@ import ProfileScreen from './src/screens/profile/Profile.screen';
 import ConsumerProfileScreen from './src/screens/profile/Profile.Consumer.screen';
 import ProviderDashboard from './src/screens/dashboard/ProviderDashboard.screen';
 import ServiceRequestsScreen from './src/screens/serviceRequests/ServiceRequests.screen';
-import ConsumerScheduleScreen from './src/screens/consumerSchedule/consumerScheduleScreen.screen';
+import ConsumerScheduleScreen from './src/screens/consumerSchedule/consumerSchedule.screen';
 import CustomAppBar from './src/components/common/CustomAppBar';
 import ChatPage from './src/screens/chat/Chat.screen';
 import MenuScreen from './src/screens/menu/Menu.screen';
