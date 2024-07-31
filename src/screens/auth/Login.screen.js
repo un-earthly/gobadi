@@ -4,6 +4,7 @@ import { commonStyles } from "./styles/Common.styles";
 import { useEffect, useState } from "react";
 import { Button } from "react-native-paper";
 import { SafeAreaView } from "react-native-safe-area-context";
+import Input from "../../components/ScreenBasedComponent/Auth/Input.js";
 
 export default function LoginScreen({ navigation }) {
     const { t } = useTranslation();
@@ -35,22 +36,16 @@ export default function LoginScreen({ navigation }) {
                 <Text style={commonStyles.sub_header}>
                     {t("login")}
                 </Text>
-                <View style={commonStyles.input_container}>
-                    <Text style={commonStyles.label}>{t("mobile")}</Text>
-                    <TextInput
-                        style={commonStyles.input}
-                        id="phone"
-                        placeholder={t("your_phone")}
-                    />
-                </View>
-                <View style={commonStyles.input_container}>
-                    <Text style={commonStyles.label}>{t("password")}</Text>
-                    <TextInput
-                        style={commonStyles.input}
-                        id="password"
-                        placeholder={t("your_password")}
-                    />
-                </View>
+                <Input
+                    label={t("mobile")}
+                    id="phone"
+                    placeholder={t("your_phone")}
+                />
+                <Input
+                    label={t("password")}
+                    id="password"
+                    placeholder={t("your_password")}
+                />
                 <View style={commonStyles.btn_container}>
                     <Button
                         onPress={handleLogin}
