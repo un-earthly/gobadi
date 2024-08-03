@@ -1,10 +1,10 @@
 [
     {
-        "value": "first",
-        "label": "donee"
+        "value": "consumer",
+        "label": "consumer"
     },
     {
-        "value": "second",
-        "label": "donor"
+        "value": "provider",
+        "label": "provider"
     }
 ]

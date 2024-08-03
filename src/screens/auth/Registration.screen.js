@@ -14,23 +14,90 @@ import RenderRoleItem from "../../components/ScreenBasedComponent/Auth/RenderRol
 import veterinaries from "../../mock-data/veterinaries.json";
 import Input from "../../components/ScreenBasedComponent/Auth/Input.js";
 import roles from "../../mock-data/roles.json";
+import { registerUrl } from "../../api/routes.js";
+import axios from 'axios';
+import AsyncStorage from "@react-native-async-storage/async-storage";
+import Toast from "react-native-toast-message";
 
 const RegistrationScreen = ({ navigation }) => {
     const { t } = useTranslation();
-    const [checked, setChecked] = useState('first');
     const [loading, setLoading] = useState(false);
+    const [formData, setFormData] = useState({
+        mobile: '',
+        role: 'consumer',
+        veterinaries: {}
+    });
 
     useEffect(() => {
         setLoading(false);
     }, []);
 
-    const handleRegistration = () => {
-        setLoading(true);
-        setTimeout(() => {
-            setLoading(false);
-            navigation.navigate("Dashboard");
-        }, 2000);
+    const handleInputChange = (id, value) => {
+        if (id === 'mobile') {
+            setFormData({ ...formData, mobile: value });
+        } else if (roles.some(role => role.id === id)) {
+            setFormData({ ...formData, role: value });
+        } else {
+            setFormData({
+                ...formData,
+                veterinaries: {
+                    ...formData.veterinaries,
+                    [id]: value
+                }
+            });
+        }
     };
+
+    const validateForm = () => {
+        const { mobile, role, veterinaries } = formData;
+        if (!mobile || !role) {
+            Toast.show({
+                type: 'error',
+                text1: t("error"),
+                text2: t("phone_and_role_required")
+            });
+            return false;
+        }
+        if (formData.role === 'consumer' && !Object.values(veterinaries).some(value => value)) {
+            Toast.show({
+                type: 'error',
+                text1: t("error"),
+                text2: t("at_least_one_veterinary_field_required")
+            });
+            return false;
+        }
+        return true;
+    };
+    const handleRegistration = async () => {
+        if (!validateForm()) {
+            return;
+        }
+
+        setLoading(true);
+
+        try {
+            const response = await axios.post(registerUrl, formData);
+            setLoading(false);
+
+            await AsyncStorage.setItem('userData', JSON.stringify(response.data));
+
+            Toast.show({
+                type: 'success',
+                text1: t("success"),
+                text2: t("registration_successful")
+            });
+
+            navigation.navigate("Dashboard");
+        } catch (error) {
+            setLoading(false);
+            Toast.show({
+                type: 'error',
+                text1: t("error"),
+                text2: t("registration_failed")
+            });
+        }
+    };
+
 
     return (
         <SafeAreaView style={commonStyles.container}>
@@ -46,22 +113,28 @@ const RegistrationScreen = ({ navigation }) => {
                     </Text>
                     <Input
                         label={t("mobile")}
-                        id="phone"
+                        id="mobile"
                         placeholder={t("your_phone")}
+                        onChangeText={(value) => handleInputChange("mobile", value)}
+                        value={formData.mobile}
                     />
-                    {checked === 'first' && (
+                    {formData.role === 'consumer' && (
                         <View style={{
                             flexDirection: "row",
                             flexWrap: "wrap",
                             columnGap: 20,
                         }}>
-                            {veterinaries.map(e => <View style={{ width: "46.7%" }}>
-                                <Input
-                                    label={t(e.label)}
-                                    id={e.id}
-                                    placeholder={t(e.placeholder)}
-                                />
-                            </View>)}
+                            {veterinaries.map(e => (
+                                <View key={e.id} style={{ width: "46.7%" }}>
+                                    <Input
+                                        label={t(e.label)}
+                                        id={e.id}
+                                        placeholder={t(e.placeholder)}
+                                        onChangeText={(value) => handleInputChange(e.id, value)}
+                                        value={formData.veterinaries[e.id]}
+                                    />
+                                </View>
+                            ))}
                         </View>
                     )}
                     <View style={styles.role_container}>
@@ -72,8 +145,8 @@ const RegistrationScreen = ({ navigation }) => {
                             {
                                 roles.map((role) => <RenderRoleItem
                                     key={role.value}
-                                    checked={checked}
-                                    setChecked={setChecked}
+                                    checked={formData.role}
+                                    setChecked={(value) => handleInputChange(role.id, value)}
                                     role={role}
                                 />)
                             }
@@ -95,7 +168,7 @@ const RegistrationScreen = ({ navigation }) => {
                     </View>
                 </View>
             </ScrollView>
-
+            <Toast />
         </SafeAreaView>
     );
 };

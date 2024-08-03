@@ -7,8 +7,8 @@
     "profile": "প্রোফাইল",
     "app_name": "গবাদি",
     "mobile": "মোবাইল",
-    "donor": "দাতা",
-    "donee": "গ্রহীতা",
+    "provider": "দাতা",
+    "consumer": "গ্রহীতা",
     "role": "রোল",
     "already_have_account": "আপনার ইতিমধ্যে অ্যাকাউন্ট আছে",
     "your_phone": "আপনার মোবাইল",
@@ -79,6 +79,12 @@
     "welcome_back": "ফিরে আসার জন্য স্বাগতম",
     "login_error": "লগইন ত্রুটি",
     "something_went_wrong": "কিছু ভুল হয়েছে",
-    "validation_error": "যাচাইকরণ ত্রুটি",
-    "fields_required": "সমস্ত ক্ষেত্র পূরণ করা প্রয়োজন"
+    "validation_error": "বৈধতা ত্রুটি",
+    "fields_required": "সমস্ত ফিল্ড পূরণ করা প্রয়োজন",
+    "at_least_one_veterinary_field_required": "কমপক্ষে একটি ভেটেরিনারি ফিল্ড প্রয়োজন",
+    "phone_and_role_required": "ফোন এবং রোল প্রয়োজন",
+    "registration_failed": "রেজিস্ট্রেশন ব্যর্থ হয়েছে",
+    "registration_successful": "রেজিস্ট্রেশন সফল",
+    "success": "সফল",
+    "error": "ত্রুটি"
 }
