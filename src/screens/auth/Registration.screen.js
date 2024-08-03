@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import {
     Image,
+    ScrollView,
     TouchableOpacity,
     View
 } from "react-native";
@@ -33,63 +34,68 @@ const RegistrationScreen = ({ navigation }) => {
 
     return (
         <SafeAreaView style={commonStyles.container}>
-            <View style={commonStyles.wrapper}>
-                <Image
-                    source={require("../../../assets/adaptive-icon.png")}
-                    style={commonStyles.logo}
-                />
-                <Text style={commonStyles.sub_header}>
-                    {t("registration")}
-                </Text>
-                <Input
-                    label={t("mobile")}
-                    id="phone"
-                    placeholder={t("your_phone")}
-                />
-                {checked === 'first' && (
-                    <View style={{
-                        flexDirection: "row",
-                        flexWrap: "wrap",
-                        columnGap: 20,
-                    }}>
-                        {veterinaries.map(e => <View style={{ width: "46.7%" }}>
-                            <Input
-                                label={t(e.label)}
-                                id={e.id}
-                                placeholder={t(e.placeholder)}
-                            />
-                        </View>)}
-                    </View>
-                )}
-                <View style={styles.role_container}>
-                    <Text style={styles.role_container_label}>
-                        {t("role")}
-                    </Text>
-                    <View style={styles.role_item_container}>
-                        {
-                            roles.map((role) => <RenderRoleItem
-                                checked={checked}
-                                setChecked={setChecked}
-                                role={role}
-                            />)
-                        }
-                    </View>
-                    <Button
-                        onPress={handleRegistration}
-                        buttonColor="#6D30ED"
-                        textColor="white"
-                        loading={loading}
-                    >
+            <ScrollView>
+
+                <View style={commonStyles.wrapper}>
+                    <Image
+                        source={require("../../../assets/adaptive-icon.png")}
+                        style={commonStyles.logo}
+                    />
+                    <Text style={commonStyles.sub_header}>
                         {t("registration")}
-                    </Button>
-                    <View style={commonStyles.footer}>
-                        <Text>{t("already_have_account")} ?{" "}</Text>
-                        <TouchableOpacity onPress={() => navigation.navigate('Login')}>
-                            <Text style={commonStyles.link}>{t("login")}</Text>
-                        </TouchableOpacity>
+                    </Text>
+                    <Input
+                        label={t("mobile")}
+                        id="phone"
+                        placeholder={t("your_phone")}
+                    />
+                    {checked === 'first' && (
+                        <View style={{
+                            flexDirection: "row",
+                            flexWrap: "wrap",
+                            columnGap: 20,
+                        }}>
+                            {veterinaries.map(e => <View style={{ width: "46.7%" }}>
+                                <Input
+                                    label={t(e.label)}
+                                    id={e.id}
+                                    placeholder={t(e.placeholder)}
+                                />
+                            </View>)}
+                        </View>
+                    )}
+                    <View style={styles.role_container}>
+                        <Text style={styles.role_container_label}>
+                            {t("role")}
+                        </Text>
+                        <View style={styles.role_item_container}>
+                            {
+                                roles.map((role) => <RenderRoleItem
+                                    key={role.value}
+                                    checked={checked}
+                                    setChecked={setChecked}
+                                    role={role}
+                                />)
+                            }
+                        </View>
+                        <Button
+                            onPress={handleRegistration}
+                            buttonColor="#6D30ED"
+                            textColor="white"
+                            loading={loading}
+                        >
+                            {t("registration")}
+                        </Button>
+                        <View style={commonStyles.footer}>
+                            <Text>{t("already_have_account")} ?{" "}</Text>
+                            <TouchableOpacity onPress={() => navigation.navigate('Login')}>
+                                <Text style={commonStyles.link}>{t("login")}</Text>
+                            </TouchableOpacity>
+                        </View>
                     </View>
                 </View>
-            </View>
+            </ScrollView>
+
         </SafeAreaView>
     );
 };

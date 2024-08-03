@@ -3,6 +3,7 @@ import { Image, ScrollView, Text, View, StyleSheet } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { globalStyles } from "../../styles/Global.styles";
 import { styles } from "./styles/ServiceRequests.styles";
+import BottomBar from "../../components/common/BottomBar";
 
 const ProviderCard = ({ provider }) => (
     <View key={provider.id} style={styles.providerCard}>
@@ -19,7 +20,7 @@ const ProviderCard = ({ provider }) => (
     </View>
 );
 
-export default function ServiceRequestsScreen() {
+export default function ServiceRequestsScreen({ navigation }) {
     const { t } = useTranslation();
 
     const providers = [
@@ -41,14 +42,14 @@ export default function ServiceRequestsScreen() {
 
     return (
         <SafeAreaView style={globalStyles.container}>
-            <ScrollView>
-                {/* <Text style={globalStyles.title}>{t("service_requests")}</Text> */}
+            <ScrollView contentContainerStyle={globalStyles.bottom_bar_height}>
                 <View style={styles.providersContainer}>
                     {providers.map(provider => (
                         <ProviderCard key={provider.id} provider={provider} />
                     ))}
                 </View>
             </ScrollView>
+            <BottomBar navigation={navigation} />
         </SafeAreaView>
     );
 }

@@ -1,12 +1,12 @@
 import { StyleSheet } from 'react-native';
 
 export const styles = StyleSheet.create({
-       menu_container: {
+    menu_container: {
         flexDirection: 'row',
         flexWrap: 'wrap',
         justifyContent: 'center',
         rowGap: 8,
-        columnGap: 8
+        columnGap: 8,
     },
     menu_item_half: {
         width: '48%',

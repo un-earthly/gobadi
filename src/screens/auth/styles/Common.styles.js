@@ -8,7 +8,8 @@ export const commonStyles = StyleSheet.create({
         justifyContent: 'center',
     },
     wrapper: {
-        width: "80%"
+        padding: 20,
+        width: "100%"
     },
     header: {
         fontSize: 28,
@@ -38,12 +39,14 @@ export const commonStyles = StyleSheet.create({
         marginVertical: 4
     },
     btn_container: {
-        marginVertical: 20
+        marginVertical: 20,
+        width: "100%"
     },
     footer: {
         marginVertical: 12,
         flexDirection: "row",
         justifyContent: "center",
+        width: "100%"
     },
     logo: {
         height: 60,

@@ -81,35 +81,43 @@ const MenuScreen = ({ navigation }) => {
 
     return (
         <SafeAreaView style={globalStyles.container}>
-            <ScrollView>
-                <View style={styles.menu_container}>
-                    {menuItems.map((item, index) => (
-                        <MenuItem
-                            key={item.id}
-                            item={item}
-                            onPress={handleMenuItemPress}
-                            selected={selectedItem && item.id === selectedItem.id}
-                            styleType={index % 5 === 4 ? 'full' : 'half'}
-                        />
-                    ))}
+            <ScrollView contentContainerStyle={globalStyles.bottom_bar_height}>
+                <View style={{
+                    padding: 10
+                }}>
+                    <View style={styles.menu_container}>
+                        {menuItems.map((item, index) => (
+                            <MenuItem
+                                key={item.id}
+                                item={item}
+                                onPress={handleMenuItemPress}
+                                selected={selectedItem && item.id === selectedItem.id}
+                                styleType={index % 5 === 4 ? 'full' : 'half'}
+                            />
+                        ))}
+                    </View>
+                    <View style={{
+                        flex: 1
+                    }}>
+                        {selectedItem && (
+                            <View style={styles.menu_container}>
+                                <View style={styles.selected_item_header}>
+                                    <FontAwesome6 name="arrow-down" size={24} color="black" />
+                                    <Text style={styles.selected_item_title}>{selectedItem.title}</Text>
+                                </View>
+                                <View style={styles.category_container}>
+                                    {selectedItem.categories.map((category) => (
+                                        <CategoryItem
+                                            key={category.id}
+                                            category={category}
+                                            onPress={handleCategoryPress}
+                                        />
+                                    ))}
+                                </View>
+                            </View>
+                        )}
+                    </View>
                 </View>
-                {selectedItem && (
-                    <>
-                        <View style={styles.selected_item_header}>
-                            <FontAwesome6 name="arrow-down" size={24} color="black" />
-                            <Text style={styles.selected_item_title}>{selectedItem.title}</Text>
-                        </View>
-                        <View style={styles.category_container}>
-                            {selectedItem.categories.map((category) => (
-                                <CategoryItem
-                                    key={category.id}
-                                    category={category}
-                                    onPress={handleCategoryPress}
-                                />
-                            ))}
-                        </View>
-                    </>
-                )}
             </ScrollView>
             <BottomBar navigation={navigation} />
         </SafeAreaView>

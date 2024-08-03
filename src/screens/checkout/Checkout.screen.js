@@ -18,7 +18,10 @@ export default function CheckoutScreen({ navigation }) {
     }, []);
 
     return <SafeAreaView style={globalStyles.container}>
-        <ScrollView contentContainerStyle={styles.scrollViewContainer}>
+        <ScrollView contentContainerStyle={[
+            globalStyles.bottom_bar_height,
+            styles.scrollViewContainer
+        ]}>
 
             <View style={styles.serviceDetails}>
                 <Text>

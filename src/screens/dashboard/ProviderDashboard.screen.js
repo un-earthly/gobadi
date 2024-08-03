@@ -12,7 +12,7 @@ export default function ProviderDashboard({ navigation }) {
     return (
 
         <View style={globalStyles.container}>
-            <ScrollView>
+            <ScrollView contentContainerStyle={globalStyles.bottom_bar_height}>
                 <View style={{
                     rowGap: 20
                 }}>
@@ -25,7 +25,7 @@ export default function ProviderDashboard({ navigation }) {
                                 uri: "https://randomuser.me/api/portraits/men/32.jpg"
                             }}
                             style={{
-                                height: 156,
+                                height: "100%",
                                 width: 100,
                                 borderRadius: 8
                             }}

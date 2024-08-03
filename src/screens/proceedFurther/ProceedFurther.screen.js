@@ -33,7 +33,7 @@ export function ProceedFurtherScreen({ navigation }) {
 
     ];
     return <SafeAreaView style={globalStyles.container}>
-        <ScrollView>
+        <ScrollView contentContainerStyle={globalStyles.bottom_bar_height}>
             <View style={{
                 rowGap: 20,
                 paddingHorizontal: 10

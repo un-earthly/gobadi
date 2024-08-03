@@ -4,21 +4,13 @@ import { Appbar, Divider } from "react-native-paper";
 import { SafeAreaView } from "react-native-safe-area-context";
 import MaterialCommunityIcons from '@expo/vector-icons/MaterialCommunityIcons';
 import AntDesign from '@expo/vector-icons/AntDesign';
-import { Feather } from '@expo/vector-icons';
-export default function ConsumerProfileScreen() {
+import { globalStyles } from "../../styles/Global.styles";
+import BottomBar from "../../components/common/BottomBar";
+export default function ConsumerProfileScreen({ navigation }) {
     const { t } = useTranslation()
-    return <SafeAreaView>
-        <ScrollView>
+    return <SafeAreaView style={globalStyles.container}>
+        <ScrollView contentContainerStyle={globalStyles.bottom_bar_height}>
             <View>
-                <Appbar style={{
-                    backgroundColor: "#ccc",
-                }}
-                    mode="center-aligned"
-                >
-                    <Appbar.BackAction onPress={() => { }} />
-                    <Appbar.Content title={t("profile")} />
-                    <Appbar.Action icon="magnify" onPress={() => { }} />
-                </Appbar>
                 <View style={{
                     marginVertical: 20,
                     rowGap: 20
@@ -53,7 +45,7 @@ export default function ConsumerProfileScreen() {
                                 fontWeight: 600,
                                 color: "#bbb"
                             }}>
-                                {t("name")}
+                                {t("name_header")}
                             </Text >
                             <Text style={{
                                 fontSize: 16,
@@ -209,6 +201,7 @@ export default function ConsumerProfileScreen() {
             </View>
 
         </ScrollView>
+        <BottomBar navigation={navigation} />
     </SafeAreaView>
 }
 

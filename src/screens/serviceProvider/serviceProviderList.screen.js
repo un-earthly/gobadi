@@ -58,7 +58,7 @@ export function ServiceProviderListScreen({ navigation }) {
 
     return (
         <SafeAreaView style={globalStyles.container}>
-            <ScrollView>
+            <ScrollView contentContainerStyle={globalStyles.bottom_bar_height}>
                 <View style={styles.contentContainer}>
                     <View style={styles.providersContainer}>
                         {providers.map(provider => (

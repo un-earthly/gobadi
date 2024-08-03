@@ -15,15 +15,15 @@ const ConsumerScheduleScreen = ({ navigation }) => {
     const { t } = useTranslation();
 
     const images = [
-        "https://img.freepik.com/premium-psd/brown-cow_76964-27039.jpg?uid=R38734096&ga=GA1.1.1663859300.1712593157&semt=sph",
-        "https://img.freepik.com/free-photo/cows-standing-green-field-front-fuji-mountain-japan_335224-197.jpg?uid=R38734096&ga=GA1.1.1663859300.1712593157&semt=sph",
-        "https://img.freepik.com/free-photo/black-white-cow-lying-down-grass_268835-811.jpg?uid=R38734096&ga=GA1.1.1663859300.1712593157&semt=sph",
-        "https://img.freepik.com/premium-psd/brown-cow_76964-27039.jpg?uid=R38734096&ga=GA1.1.1663859300.1712593157&semt=sph"
+        require('../../../assets/49369.jpg'),
+        require('../../../assets/3015.jpg'),
+        require('../../../assets/854.jpg'),
+        require('../../../assets/508.jpg'),
     ];
 
     return (
         <SafeAreaView style={globalStyles.container}>
-            <ScrollView>
+            <ScrollView contentContainerStyle={globalStyles.bottom_bar_height}>
                 <View style={styles.container}>
 
                     <View style={styles.section}>
@@ -38,11 +38,11 @@ const ConsumerScheduleScreen = ({ navigation }) => {
                             {t("uploaded_pictures")}
                         </Text>
                         <View style={styles.imagesContainer}>
-                            {images.map((uri, index) => (
+                            {images.map((i, index) => (
                                 <Image
                                     key={index}
                                     style={styles.image}
-                                    source={{ uri }}
+                                    source={i}
                                 />
                             ))}
                         </View>

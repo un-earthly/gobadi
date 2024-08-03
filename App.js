@@ -21,6 +21,7 @@ import { useEffect } from 'react';
 const Stack = createNativeStackNavigator();
 import * as SplashScreen from 'expo-splash-screen';
 import ConsumerDashboard from "./src/screens/dashboard/ConsumerDashboard.screen"
+import Toast from 'react-native-toast-message';
 export default function App() {
   const { i18n, t } = useTranslation();
   useEffect(() => {
@@ -64,6 +65,14 @@ export default function App() {
                 header: (props) => <CustomAppBar screen={"dashboard"} {...props} />,
               })}
             />
+            {/* <Stack.Screen
+              name="Dashboard"
+              component={ConsumerProfileScreen}
+              options={({ navigation, route, options }) => ({
+                header: (props) => <CustomAppBar {...props} />,
+                title: t("consumer_dashboard_header")
+              })}
+            /> */}
             <Stack.Screen
               name="Menu"
               component={MenuScreen}
@@ -120,22 +129,22 @@ export default function App() {
                 title: t("message")
               })}
             />
-            <Stack.Screen
+            {/* <Stack.Screen
               name="ConsumerProfile"
               component={ConsumerProfileScreen}
               options={({ navigation, route, options }) => ({
                 header: (props) => <CustomAppBar {...props} />,
                 title: t("profile")
               })}
-            />
-            <Stack.Screen
+            /> */}
+            {/* <Stack.Screen
               name="ConsumerDashboard"
               component={ConsumerDashboard}
               options={({ navigation, route, options }) => ({
                 header: (props) => <CustomAppBar {...props} />,
                 title: t("profile")
               })}
-            />
+            /> */}
             <Stack.Screen
               name="ServiceRequests"
               component={ServiceRequestsScreen}
@@ -153,6 +162,8 @@ export default function App() {
               })}
             />
           </Stack.Navigator>
+          <Toast />
+
         </NavigationContainer>
       </SafeAreaProvider>
     </I18nextProvider >

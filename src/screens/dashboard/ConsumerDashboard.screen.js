@@ -25,7 +25,7 @@ export default function ConsumerDashboard({ navigation }) {
                                 uri: "https://randomuser.me/api/portraits/men/32.jpg"
                             }}
                             style={{
-                                height: 160,
+                                height: "100%",
                                 width: 100,
                                 borderRadius: 8
                             }}
@@ -40,7 +40,7 @@ export default function ConsumerDashboard({ navigation }) {
                                     {t("name")}
                                 </Text>
                                 <Text style={{ marginBottom: 10 }}>
-                                    {t("senior_specialist")}
+                                    {t("farmer")}
                                 </Text>
                             </View>
                             <View style={{

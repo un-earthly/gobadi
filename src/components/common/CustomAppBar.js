@@ -29,7 +29,7 @@ const CustomAppBar = ({ navigation, route, options, screen }) => {
                             titleStyle={{
                                 color: "#fff"
                             }}
-                            title={t("consumer_dashboard_header")}
+                            title={t("provider_dashboard_header")}
                         />
                         <View style={{
                             flexDirection: 'row',
@@ -41,7 +41,7 @@ const CustomAppBar = ({ navigation, route, options, screen }) => {
                                     true: '#ffffff70',
                                     false: '#80808080'
                                 }}
-                                thumbColor={isSwitchOn?"#fff":"#aaa"}
+                                thumbColor={isSwitchOn ? "#fff" : "#aaa"}
                                 onValueChange={onToggleSwitch}
                             />
                             <Text style={{
@@ -50,9 +50,9 @@ const CustomAppBar = ({ navigation, route, options, screen }) => {
                         </View>
                     </View> : <>
                         <Appbar.BackAction color='white' onPress={() => navigation.goBack()} />
-                            <Appbar.Content titleStyle={{
-                                color: "#fff"
-                            }} title={title} />
+                        <Appbar.Content titleStyle={{
+                            color: "#fff"
+                        }} title={title} />
                     </>
                 }
 

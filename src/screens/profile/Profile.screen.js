@@ -10,7 +10,7 @@ import BottomBar from "../../components/common/BottomBar";
 export default function ProfileScreen({ navigation }) {
     const { t } = useTranslation()
     return <SafeAreaView style={globalStyles.container}>
-        <ScrollView>
+        <ScrollView contentContainerStyle={globalStyles.bottom_bar_height}>
             <View>
                 <View style={{
                     marginVertical: 20,

@@ -43,7 +43,8 @@
     "location": "স্থান ",
     "shylhet": "সিলেট",
     "service_consumer_details_title": "গ্রহীতা তথ্য বিবরন ",
-    "consumer_dashboard_header": "দাতা ড্যাশবোর্ড",
+    "provider_dashboard_header": "দাতা ড্যাশবোর্ড",
+    "consumer_dashboard_header": "গ্রহীতা ড্যাশবোর্ড",
     "online": "অনলাইন",
     "rating": "রেটিং",
     "service_count": "সার্ভিস সংখ্যা",
@@ -72,5 +73,12 @@
     "number_of_goats": "ছাগলের সংখ্যা",
     "number_of_hens": "মুরগির সংখ্যা",
     "number_of_ducks": "হাঁসের সংখ্যা",
-    "number_of_fishes": "মাছের সংখ্যা"
+    "number_of_fishes": "মাছের সংখ্যা",
+    "farmer": "খামারি",
+    "login_success": "লগইন সফল হয়েছে",
+    "welcome_back": "ফিরে আসার জন্য স্বাগতম",
+    "login_error": "লগইন ত্রুটি",
+    "something_went_wrong": "কিছু ভুল হয়েছে",
+    "validation_error": "যাচাইকরণ ত্রুটি",
+    "fields_required": "সমস্ত ক্ষেত্র পূরণ করা প্রয়োজন"
 }

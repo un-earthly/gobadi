@@ -34,7 +34,7 @@ export default function UploadImageScreen({ navigation }) {
 
     return (
         <SafeAreaView style={globalStyles.container}>
-            <ScrollView >
+            <ScrollView contentContainerStyle={globalStyles.bottom_bar_height}>
                 <View>
 
                     <Text style={globalStyles.title}>
