@@ -1,13 +1,14 @@
 import { Image, ScrollView, Text, TextInput, TouchableOpacity, View } from "react-native";
 import { useTranslation } from "react-i18next";
 import { commonStyles } from "./styles/Common.styles";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { Button } from "react-native-paper";
 import { SafeAreaView } from "react-native-safe-area-context";
 import Input from "../../components/ScreenBasedComponent/Auth/Input.js";
 import axios from "axios";
 import Toast from "react-native-toast-message";
 import { loginUrl } from "../../api/routes.js";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 
 export default function LoginScreen({ navigation }) {
     const { t } = useTranslation();

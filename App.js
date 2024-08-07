@@ -17,33 +17,35 @@ import ConsumerScheduleScreen from './src/screens/consumerSchedule/consumerSched
 import CustomAppBar from './src/components/common/CustomAppBar';
 import ChatPage from './src/screens/chat/Chat.screen';
 import MenuScreen from './src/screens/menu/Menu.screen';
-import { useEffect } from 'react';
+import { useState } from 'react';
 const Stack = createNativeStackNavigator();
-import * as SplashScreen from 'expo-splash-screen';
-import ConsumerDashboard from "./src/screens/dashboard/ConsumerDashboard.screen"
 import Toast from 'react-native-toast-message';
+import { getUserData } from './src/utility';
+import AppointmentScreen from './src/screens/appointments/appointment.screen';
 export default function App() {
   const { i18n, t } = useTranslation();
-  useEffect(() => {
-    const prepare = async () => {
-      try {
-        await SplashScreen.preventAutoHideAsync();
+  const [role, setRole] = useState(null);
+  const [initialRoute, setInitialRoute] = useState('Login');
 
-      } catch (e) {
-        console.warn(e);
-      } finally {
-        await SplashScreen.hideAsync();
+
+  (async () => {
+    try {
+      const userData = await getUserData();
+      if (userData && userData.token) {
+        setRole(userData.role);
+        setInitialRoute('Dashboard');
       }
-    };
+    } catch (error) {
+      console.error('Failed to load user data:', error);
+    }
+  })();
 
-    prepare();
-  }, []);
   return (
     <I18nextProvider i18n={i18n}>
       <SafeAreaProvider>
 
         <NavigationContainer>
-          <Stack.Navigator>
+          <Stack.Navigator initialRouteName={initialRoute}>
             <Stack.Screen
               name="Login"
               component={LoginScreen}
@@ -58,24 +60,33 @@ export default function App() {
                 header: (props) => <></>,
               })}
             />
-            <Stack.Screen
+            {role === "provider" ? <Stack.Screen
               name="Dashboard"
               component={ProviderDashboard}
               options={({ navigation, route, options }) => ({
                 header: (props) => <CustomAppBar screen={"dashboard"} {...props} />,
               })}
             />
-            {/* <Stack.Screen
-              name="Dashboard"
-              component={ConsumerProfileScreen}
-              options={({ navigation, route, options }) => ({
-                header: (props) => <CustomAppBar {...props} />,
-                title: t("consumer_dashboard_header")
-              })}
-            /> */}
-            <Stack.Screen
+              :
+              <Stack.Screen
+                name="Dashboard"
+                component={ConsumerProfileScreen}
+                options={({ navigation, route, options }) => ({
+                  header: (props) => <CustomAppBar {...props} />,
+                  title: t("consumer_dashboard_header")
+                })}
+              />}
+            {role === "consumer" && <Stack.Screen
               name="Menu"
               component={MenuScreen}
+              options={({ navigation, route, options }) => ({
+                header: (props) => <CustomAppBar screen={"menu"} {...props} />,
+                title: t("menu")
+              })}
+            />}
+            <Stack.Screen
+              name="Appointments"
+              component={AppointmentScreen}
               options={({ navigation, route, options }) => ({
                 header: (props) => <CustomAppBar screen={"menu"} {...props} />,
                 title: t("menu")

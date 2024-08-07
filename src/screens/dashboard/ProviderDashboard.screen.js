@@ -5,15 +5,18 @@ import { FontAwesome } from '@expo/vector-icons';
 import { MaterialIcons } from '@expo/vector-icons';
 import BottomBar from "../../components/common/BottomBar";
 import { globalStyles } from "../../styles/Global.styles";
+import { useState } from "react";
 
 export default function ProviderDashboard({ navigation }) {
     const { t } = useTranslation();
+    const [userData, setUserData] = useState({
 
+    })
     return (
 
         <View style={globalStyles.container}>
             <ScrollView contentContainerStyle={globalStyles.bottom_bar_height}>
-                <View style={{
+                {<View style={{
                     rowGap: 20
                 }}>
                     <View style={{
@@ -248,7 +251,7 @@ export default function ProviderDashboard({ navigation }) {
                             </View>
                         </TouchableOpacity>
                     </View>
-                </View>
+                </View>}
             </ScrollView>
             <BottomBar navigation={navigation} />
         </View>
