@@ -1,99 +1,141 @@
-import React from "react";
-import { ScrollView, View, FlatList } from "react-native";
-import { Text, Button, Card, Divider, List, Chip, FAB, useTheme } from "react-native-paper";
-import { SafeAreaView } from "react-native-safe-area-context";
+import React, { useState, useEffect } from 'react';
+import { View, ScrollView, StyleSheet, TouchableOpacity } from 'react-native';
+import { Text, Card, Button, Modal, Portal, TextInput } from 'react-native-paper';
+import { useTranslation } from "react-i18next";
+import axios from 'axios';
+import { getUserData } from "../../utility";
+import BottomBar from "../../components/common/BottomBar";
 import { globalStyles } from "../../styles/Global.styles";
-import { availableSlots } from "../../mock-data/appointments.json";
-import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
-import { styles } from "./style/appointment.styles";
+import { SafeAreaView } from 'react-native-safe-area-context';
+import { dummyServiceRequests } from "../../mock-data/serviceRequests"
+export default function AppointmentsPage({ navigation }) {
+    const { t } = useTranslation();
+    const [serviceRequests, setServiceRequests] = useState([]);
+    const [selectedRequest, setSelectedRequest] = useState(null);
+    const [isModalVisible, setIsModalVisible] = useState(false);
+    const [appointmentDate, setAppointmentDate] = useState('');
+    const [appointmentTime, setAppointmentTime] = useState('');
 
-const appointments = [
-    { id: '1', type: 'Video Call', date: '2024-08-10', time: '10:00 AM', status: 'Pending' },
-    { id: '2', type: 'Audio Call', date: '2024-08-10', time: '11:00 AM', status: 'Confirmed' },
-    { id: '3', type: 'Message', date: '2024-08-11', time: '02:00 PM', status: 'Pending' },
-];
+    useEffect(() => {
+        fetchServiceRequests();
+    }, []);
 
+    // const fetchServiceRequests = async () => {
+    //     try {
+    //         const storedUserData = await getUserData();
+    //         if (storedUserData && storedUserData._id) {
+    //             const response = await axios.get(`/api/users/${storedUserData._id}/service-requests`);
+    //             setServiceRequests(response.data);
+    //         } else {
+    //             console.error("User ID not found");
+    //         }
+    //     } catch (error) {
+    //         console.error("Error fetching service requests:", error);
+    //     }
+    // };
 
-export default function AppointmentScreen() {
-    const theme = useTheme();
+    const handleScheduleAppointment = (request) => {
+        setSelectedRequest(request);
+        setIsModalVisible(true);
+    };
+    const fetchServiceRequests = async () => {
+        // Simulating an API call delay
+        await new Promise(resolve => setTimeout(resolve, 1000));
+        setServiceRequests(dummyServiceRequests);
+    };
+    // const confirmAppointment = async () => {
+    //     try {
+    //         // Implement your API call to schedule the appointment
+    //         await axios.post(`/api/appointments`, {
+    //             requestId: selectedRequest._id,
+    //             date: appointmentDate,
+    //             time: appointmentTime
+    //         });
+    //         // Refresh the service requests
+    //         fetchServiceRequests();
+    //         setIsModalVisible(false);
+    //     } catch (error) {
+    //         console.error("Error scheduling appointment:", error);
+    //     }
+    // };
+    const confirmAppointment = async () => { }
 
-    const renderAppointmentItem = ({ item }) => (
-        <Card key={item.id} style={styles.appointmentCard}>
-            <Card.Content>
-                <View style={styles.cardHeader}>
-                    <Chip icon="medical-bag" style={[styles.chip, { backgroundColor: theme.colors.primary }]}>
-                        <Text style={styles.chipText}>{item.type}</Text>
-                    </Chip>
-                    <Chip icon="clock-outline" style={[styles.chip, { backgroundColor: theme.colors.accent }]}>
-                        <Text style={styles.chipText}>{item.status}</Text>
-                    </Chip>
-                </View>
-                <Text style={styles.dateTime}>{item.date} at {item.time}</Text>
-            </Card.Content>
-            <Card.Actions>
-                <Button
-                    mode="contained"
-                    onPress={() => console.log('Approved', item.id)}
-                    icon="check"
-                    style={styles.actionButton}
-                >
-                    Approve
-                </Button>
-                <Button
-                    mode="outlined"
-                    onPress={() => console.log('Rejected', item.id)}
-                    icon="close"
-                    style={styles.actionButton}
-                >
-                    Reject
-                </Button>
-            </Card.Actions>
-        </Card>
-    );
-    const renderSlotItem = ({ item }) => (
-        <List.Item
-            key={item.id}
-            title={item.date}
-            description={item.time}
-            left={props => <List.Icon {...props} icon="clock-outline" color={theme.colors.primary} />}
-            right={props => <Icon {...props} name="chevron-right" size={24} color={theme.colors.primary} />}
-            onPress={() => console.log('Selected slot', item.id)}
-            style={styles.slotItem}
-        />
-    );
 
     return (
-        <SafeAreaView style={[globalStyles.container, { backgroundColor: theme.colors.background }]}>
-            <Text style={styles.title}>Appointment Management</Text>
+        <SafeAreaView >
+            {/* <View style={globalStyles.container}> */}
+                <ScrollView contentContainerStyle={globalStyles.bottom_bar_height}>
+                    <Text style={styles.title}>{t("appointment_requests")}</Text>
+                    {serviceRequests.map((request) => (
+                        <Card key={request._id} style={styles.card}>
+                            <Card.Content>
+                                <Text style={styles.cardTitle}>{request.service}</Text>
+                                <Text>{t("requested_by")}: {request.userName}</Text>
+                                <Text>{t("requested_date")}: {new Date(request.requestedDate).toLocaleDateString()}</Text>
+                                <Text>{t("status")}: {request.status}</Text>
+                            </Card.Content>
+                            <Card.Actions>
+                                <Button onPress={() => handleScheduleAppointment(request)}>
+                                    {t("schedule_appointment")}
+                                </Button>
+                            </Card.Actions>
+                        </Card>
+                    ))}
+                </ScrollView>
 
-            <View style={styles.section}>
-                <Text style={styles.sectionTitle}>Requested Appointments</Text>
-                <FlatList
-                    data={appointments}
-                    renderItem={renderAppointmentItem}
-                    keyExtractor={(item) => item.id.toString()}
-                    horizontal
-                    showsHorizontalScrollIndicator={false}
-                />
-            </View>
+                <Portal>
+                    <Modal visible={isModalVisible} onDismiss={() => setIsModalVisible(false)}>
+                        <Card>
+                            <Card.Content>
+                                <Text style={styles.modalTitle}>{t("schedule_appointment")}</Text>
+                                <TextInput
+                                    label={t("date")}
+                                    value={appointmentDate}
+                                    onChangeText={setAppointmentDate}
+                                    style={styles.input}
+                                />
+                                <TextInput
+                                    label={t("time")}
+                                    value={appointmentTime}
+                                    onChangeText={setAppointmentTime}
+                                    style={styles.input}
+                                />
+                            </Card.Content>
+                            <Card.Actions>
+                                <Button onPress={() => setIsModalVisible(false)}>{t("cancel")}</Button>
+                                <Button onPress={confirmAppointment}>{t("confirm")}</Button>
+                            </Card.Actions>
+                        </Card>
+                    </Modal>
+                </Portal>
 
-            <Divider style={styles.divider} />
-
-            <View style={styles.section}>
-                <Text style={styles.sectionTitle}>Available Slots</Text>
-                <FlatList
-                    data={availableSlots}
-                    renderItem={renderSlotItem}
-                    keyExtractor={(item) => item.id.toString()}
-                    showsVerticalScrollIndicator={false}
-                />
-            </View>
-
-            <FAB
-                style={styles.fab}
-                icon="plus"
-                onPress={() => console.log('Add new appointment')}
-            />
+                <BottomBar navigation={navigation} />
+            {/* </View> */}
         </SafeAreaView>
     );
 }
+
+const styles = StyleSheet.create({
+    title: {
+        fontSize: 24,
+        fontWeight: 'bold',
+        marginBottom: 20,
+        textAlign: 'center',
+    },
+    card: {
+        marginBottom: 15,
+    },
+    cardTitle: {
+        fontSize: 18,
+        fontWeight: 'bold',
+        marginBottom: 10,
+    },
+    modalTitle: {
+        fontSize: 20,
+        fontWeight: 'bold',
+        marginBottom: 15,
+    },
+    input: {
+        marginBottom: 10,
+    },
+});

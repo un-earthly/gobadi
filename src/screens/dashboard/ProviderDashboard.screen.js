@@ -5,13 +5,45 @@ import { FontAwesome } from '@expo/vector-icons';
 import { MaterialIcons } from '@expo/vector-icons';
 import BottomBar from "../../components/common/BottomBar";
 import { globalStyles } from "../../styles/Global.styles";
-import { useState } from "react";
-
+import { useState, useEffect } from "react";
+import { getUserData } from "../../utility";
+import axios from "axios";
+import { userProfileUrl, userRatingsUrl, userReviewsUrl } from "../../api/routes";
 export default function ProviderDashboard({ navigation }) {
     const { t } = useTranslation();
-    const [userData, setUserData] = useState({
+    const [userData, setUserData] = useState(null);
+    const [userReviews, setUserReviews] = useState([]);
+    const [userRating, setUserRating] = useState(null);
 
-    })
+    useEffect(() => {
+        fetchUserData();
+    }, []);
+
+    const fetchUserData = async () => {
+        try {
+            const storedUserData = await getUserData();
+            if (storedUserData && storedUserData._id) {
+                const userId = storedUserData._id;
+
+                // Fetch user profile
+                const userResponse = await axios.get(userProfileUrl(userId));
+                setUserData(userResponse.data);
+
+                // Fetch user reviews
+                const reviewsResponse = await axios.get(userReviewsUrl(userId));
+                setUserReviews(reviewsResponse.data);
+
+                // Fetch user rating
+                const ratingResponse = await axios.get(userRatingsUrl(userId));
+                setUserRating(ratingResponse.data);
+            } else {
+                console.error("User data or user ID not found in storage");
+            }
+        } catch (error) {
+            console.error("Error fetching user data:", error);
+        }
+    };
+
     return (
 
         <View style={globalStyles.container}>

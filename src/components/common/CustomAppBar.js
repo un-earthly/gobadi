@@ -19,7 +19,7 @@ const CustomAppBar = ({ navigation, route, options, screen }) => {
                 backgroundColor: "#6D30ED"
             }}>
                 {
-                    screen === "dashboard" ? <View style={{
+                    screen === "Dashboard" ? <View style={{
                         flexDirection: "row",
                         paddingHorizontal: 10,
                         justifyContent: "space-between",
