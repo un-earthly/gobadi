@@ -7,7 +7,7 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import BottomBar from "../../components/common/BottomBar";
 import { Button } from "react-native-paper";
 
-export function ProceedFurtherScreen({ navigation }) {
+export function ProceedFurtherScreen({ route, navigation }) {
     const { t } = useTranslation();
     const changes = [
         {
@@ -69,7 +69,7 @@ export function ProceedFurtherScreen({ navigation }) {
                     <Button
                         buttonColor="#6D30ED"
                         textColor="white"
-                        onPress={() => navigation.navigate("ServiceProviderList")}
+                        onPress={() => navigation.navigate("ServiceProviderList", { ...route.params })}
                     >
                         {t("step_forward")}
                     </Button>

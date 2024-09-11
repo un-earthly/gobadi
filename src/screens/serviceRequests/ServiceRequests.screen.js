@@ -4,6 +4,9 @@ import { SafeAreaView } from "react-native-safe-area-context";
 import { globalStyles } from "../../styles/Global.styles";
 import { styles } from "./styles/ServiceRequests.styles";
 import BottomBar from "../../components/common/BottomBar";
+import { useEffect, useState } from "react";
+import axios from "axios";
+import { getUserData } from "../../utility";
 
 const ProviderCard = ({ provider }) => (
     <View key={provider.id} style={styles.providerCard}>
@@ -20,33 +23,21 @@ const ProviderCard = ({ provider }) => (
     </View>
 );
 
+
 export default function ServiceRequestsScreen({ navigation }) {
     const { t } = useTranslation();
+    const [requests, setRequests] = useState([])
+   
 
-    const providers = [
-        {
-            id: "1",
-            avatar: "https://randomuser.me/api/portraits/men/62.jpg",
-            name: "স্কট ডেভিস",
-            specialization: "পশু বিশেষজ্ঞ",
-            fee: "৫০",
-        },
-        {
-            id: "2",
-            avatar: "https://randomuser.me/api/portraits/women/79.jpg",
-            name: "এল্লা হিল",
-            specialization: "সিনিয়র পশু বিশেষজ্ঞ",
-            fee: "১০০",
-        },
-    ];
 
     return (
         <SafeAreaView style={globalStyles.container}>
             <ScrollView contentContainerStyle={globalStyles.bottom_bar_height}>
-                <View style={styles.providersContainer}>
-                    {providers.map(provider => (
+                <View>
+                    {requests.map(provider => (
                         <ProviderCard key={provider.id} provider={provider} />
                     ))}
+
                 </View>
             </ScrollView>
             <BottomBar navigation={navigation} />

@@ -7,52 +7,21 @@ import { SafeAreaView } from "react-native-safe-area-context";
 import Input from "../../components/ScreenBasedComponent/Auth/Input.js";
 import axios from "axios";
 import Toast from "react-native-toast-message";
-import { loginUrl } from "../../api/routes.js";
-import AsyncStorage from "@react-native-async-storage/async-storage";
 
-export default function LoginScreen({ navigation }) {
+export default function LoginScreen({ navigation, handleLogin, loading,setPassword, password,phone,setPhone}) {
     const { t } = useTranslation();
-    const [loading, setLoading] = useState(false);
-    const [phone, setPhone] = useState("");
-    const [password, setPassword] = useState("");
-    const validateForm = () => {
-        if (!phone || !password) {
-            Toast.show({
-                type: 'error',
-                text1: t("validation_error"),
-                text2: t("fields_required")
-            });
-            return false;
-        }
-        return true;
-    };
-    const handleLogin = async () => {
-        if (!validateForm()) return;
-        setLoading(true);
-        try {
 
-            const response = await axios.post(loginUrl, {
-                mobile: phone,
-                password
-            });
-            await AsyncStorage.setItem("userData", JSON.stringify(response.data));
-            setLoading(false);
-            navigation.navigate("Dashboard");
-            Toast.show({
-                type: 'success',
-                text1: t("login_success"),
-                text2: t("welcome_back")
-            });
-        } catch (error) {
-            setLoading(false);
-            Toast.show({
-                type: 'error',
-                text1: t("login_error"),
-                text2: error.response?.data?.message || t("something_went_wrong")
-            });
-            console.error("Login error", error);
-        }
-    };
+    // const validateForm = () => {
+    //     if (!phone || !password) {
+    //         Toast.show({
+    //             type: 'error',
+    //             text1: t("validation_error"),
+    //             text2: t("fields_required")
+    //         });
+    //         return false;
+    //     }
+    //     return true;
+    // };
     return (
         <SafeAreaView style={commonStyles.container}>
             <ScrollView >

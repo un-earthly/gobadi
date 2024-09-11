@@ -18,6 +18,7 @@ import { registerUrl } from "../../api/routes.js";
 import axios from 'axios';
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import Toast from "react-native-toast-message";
+import * as Clipboard from 'expo-clipboard';
 
 const RegistrationScreen = ({ navigation }) => {
     const { t } = useTranslation();
@@ -81,13 +82,26 @@ const RegistrationScreen = ({ navigation }) => {
 
             await AsyncStorage.setItem('userData', JSON.stringify(response.data));
 
+            const handleCopyPassword = async () => {
+                await Clipboard.setStringAsync(response.data.devPass);
+                Toast.hide();
+                navigation.navigate("Dashboard");
+            };
+
+            // Show Toast with Copy to Clipboard option
             Toast.show({
                 type: 'success',
                 text1: t("success"),
-                text2: t("registration_successful")
+                text2: `${t("registration_successful")} " আপনার পাসওয়ার্ড হল " ${response.data.devPass}`,
+                visibilityTime: 10000,
+                onPress: handleCopyPassword,  // Trigger copying when user presses the Toast
+                props: {
+                    copyButton: true // Add any additional props you need
+                },
+                topOffset: 50, // Adjust this if needed
+                position: 'top',
             });
 
-            navigation.navigate("Dashboard");
         } catch (error) {
             setLoading(false);
             Toast.show({

@@ -28,7 +28,6 @@ export const styles = StyleSheet.create({
         width: "90%",
         padding: 8,
         borderRadius: 4,
-        marginBottom: 20
     },
     toPay: {
         backgroundColor: "#D9D9d9",

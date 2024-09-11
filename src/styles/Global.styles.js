@@ -4,14 +4,12 @@ export const globalStyles = StyleSheet.create({
     container: {
         flex: 1,
         backgroundColor: '#fff',
-        alignItems: 'center',
-        justifyContent: 'center',
         padding: 10
     },
     title: {
         fontSize: 24,
         marginVertical: 16,
-        fontWeight: "700"
+        // fontWeight: "700"
     },
     nav_container: {
         backgroundColor: "#ccc",
@@ -23,7 +21,7 @@ export const globalStyles = StyleSheet.create({
     },
     nav_header: {
         fontSize: 24,
-        fontWeight: "700",
+        // fontWeight: "700",
         textAlign: "center"
     },
     bottom_bar_height: {

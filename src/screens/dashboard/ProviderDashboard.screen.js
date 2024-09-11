@@ -268,7 +268,7 @@ export default function ProviderDashboard({ navigation }) {
                         <Text style={{ fontSize: 20, fontWeight: '600', marginBottom: 20 }}>
                             {t("service_requests")}
                         </Text>
-                        <TouchableOpacity onPress={() => navigation.navigate("ServiceRequests")}>
+                        <TouchableOpacity onPress={() => navigation.navigate("Appointments")}>
 
                             <View style={{
                                 flexDirection: "row",

@@ -1,186 +1,134 @@
-import { I18nextProvider, useTranslation } from 'react-i18next';
-import './i18n';
+import React, { useCallback, useEffect, useState } from 'react';
+import { ActivityIndicator, Provider } from 'react-native-paper';
 import { NavigationContainer } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
-import RegistrationScreen from './src/screens/auth/Registration.screen';
-import LoginScreen from './src/screens/auth/Login.screen';
-import UploadImageScreen from './src/screens/uploadImage/UploadImage.screen';
-import { ProceedFurtherScreen } from './src/screens/proceedFurther/ProceedFurther.screen';
-import { ServiceProviderListScreen } from './src/screens/serviceProvider/serviceProviderList.screen';
-import CheckoutScreen from './src/screens/checkout/Checkout.screen';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
-import ProfileScreen from './src/screens/profile/Profile.screen';
-import ConsumerProfileScreen from './src/screens/profile/Profile.Consumer.screen';
-import ProviderDashboard from './src/screens/dashboard/ProviderDashboard.screen';
-import ServiceRequestsScreen from './src/screens/serviceRequests/ServiceRequests.screen';
-import ConsumerScheduleScreen from './src/screens/consumerSchedule/consumerSchedule.screen';
-import CustomAppBar from './src/components/common/CustomAppBar';
-import ChatPage from './src/screens/chat/Chat.screen';
-import MenuScreen from './src/screens/menu/Menu.screen';
-import { useState } from 'react';
-const Stack = createNativeStackNavigator();
+import { I18nextProvider, useTranslation } from 'react-i18next';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import axios from 'axios';
 import Toast from 'react-native-toast-message';
-import { getUserData } from './src/utility';
-import AppointmentScreen from './src/screens/appointments/appointment.screen';
-import { Provider } from 'react-native-paper';
-export default function App() {
+
+import './i18n';
+import { loginUrl } from './src/api/routes';
+import CustomAppBar from './src/components/common/CustomAppBar';
+import { consumerScreens, providerScreens, authScreens } from './screenConfig.js';
+
+const Stack = createNativeStackNavigator();
+
+const App = () => {
   const { i18n, t } = useTranslation();
   const [role, setRole] = useState(null);
   const [initialRoute, setInitialRoute] = useState('Login');
+  const [isLoading, setIsLoading] = useState(true);
+  const [phone, setPhone] = useState("");
+  const [password, setPassword] = useState("");
 
-
-  (async () => {
+  const loadUserData = useCallback(async () => {
     try {
-      const userData = await getUserData();
-      if (userData && userData.token) {
-        setRole(userData.role);
-        setInitialRoute('Dashboard');
+      const userData = await AsyncStorage.getItem('userData');
+      if (userData) {
+        const parsedUserData = JSON.parse(userData);
+        if (parsedUserData.token) {
+          setRole(parsedUserData.role);
+          setInitialRoute('Dashboard');
+        } else {
+          setRole(null);
+          setInitialRoute('Login');
+        }
+      } else {
+        setRole(null);
+        setInitialRoute('Login');
       }
     } catch (error) {
       console.error('Failed to load user data:', error);
+      setRole(null);
+      setInitialRoute('Login');
+    } finally {
+      setIsLoading(false);
     }
-  })();
+  }, []);
+
+  useEffect(() => {
+    loadUserData();
+  }, [loadUserData]);
+
+  const handleLogin = async (navigation) => {
+    setIsLoading(true);
+    try {
+      const response = await axios.post(loginUrl, { mobile: phone, password });
+      await AsyncStorage.setItem("userData", JSON.stringify(response.data));
+      setIsLoading(false);
+      navigation.navigate("Dashboard");
+      Toast.show({
+        type: 'success',
+        text1: t("login_success"),
+        text2: t("welcome_back")
+      });
+    } catch (error) {
+      setIsLoading(false);
+      Toast.show({
+        type: 'error',
+        text1: t("login_error"),
+        text2: error.response?.data?.message || t("something_went_wrong")
+      });
+      console.error("Login error", error);
+    }
+  };
+
+  if (isLoading) {
+    return <ActivityIndicator />;
+  }
+
+  const screenConfig = role === 'provider' ? providerScreens : consumerScreens;
 
   return (
-    <I18nextProvider i18n={i18n}>
-      <SafeAreaProvider>
-        <Provider>
+    <Provider>
+      <I18nextProvider i18n={i18n}>
+        <SafeAreaProvider>
           <NavigationContainer>
             <Stack.Navigator initialRouteName={initialRoute}>
-              <Stack.Screen
-                name="Login"
-                component={LoginScreen}
-                options={({ navigation, route, options }) => ({
-                  header: (props) => <></>,
-                })}
-              />
-              <Stack.Screen
-                name="Registration"
-                component={RegistrationScreen}
-                options={({ navigation, route, options }) => ({
-                  header: (props) => <></>,
-                })}
-              />
-              {role === "provider" ? <Stack.Screen
-                name="Dashboard"
-                component={ProviderDashboard}
-                options={({ navigation, route, options }) => ({
-                  header: (props) => <CustomAppBar screen={"dashboard"} {...props} />,
-                })}
-              />
-                :
+              {authScreens.map(screen => (
                 <Stack.Screen
-                  name="Dashboard"
-                  component={ConsumerProfileScreen}
-                  options={({ navigation, route, options }) => ({
-                    header: (props) => <CustomAppBar {...props} />,
-                    title: t("consumer_dashboard_header")
-                  })}
-                />}
-              {role === "consumer" ? <Stack.Screen
-                name="Menu"
-                component={MenuScreen}
-                options={({ navigation, route, options }) => ({
-                  header: (props) => <CustomAppBar screen={"menu"} {...props} />,
-                  title: t("service")
-                })}
-              /> :
+                  key={screen.name}
+                  name={screen.name}
+                  options={{ headerShown: false }}
+                >
+                  {(props) => (
+                    <screen.component
+                      {...props}
+                      handleLogin={() => handleLogin(props.navigation)}
+                      loading={isLoading}
+                      password={password}
+                      phone={phone}
+                      setPassword={setPassword}
+                      setPhone={setPhone}
+                    />
+                  )}
+                </Stack.Screen>
+              ))}
+              {screenConfig.map(screen => (
                 <Stack.Screen
-                  name="Appointments"
-                  component={AppointmentScreen}
-                  options={({ navigation, route, options }) => ({
-                    header: (props) => <CustomAppBar screen={"Appointments"} {...props} />,
-                    title: t("appointments")
+                  key={screen.name}
+                  name={screen.name}
+                  component={screen.component}
+                  options={({ navigation }) => ({
+                    header: (props) => (
+                      <CustomAppBar
+                        screen={screen.name.toLowerCase()}
+                        {...props}
+                      />
+                    ),
+                    title: t(screen.titleKey || screen.name.toLowerCase())
                   })}
                 />
-              }
-              <Stack.Screen
-                name="UploadImage"
-                component={UploadImageScreen}
-                options={({ navigation, route, options }) => ({
-                  header: (props) => <CustomAppBar {...props} />,
-                  title: t("upload_vetenaries_images")
-                })}
-              />
-              <Stack.Screen
-                name="ProceedFurther"
-                component={ProceedFurtherScreen}
-                options={({ navigation, route, options }) => ({
-                  header: (props) => <CustomAppBar {...props} />,
-                  title: t("changes_in_behavior"),
-                })}
-              />
-              <Stack.Screen
-                name="ServiceProviderList"
-                component={ServiceProviderListScreen}
-                options={({ navigation, route, options }) => ({
-                  header: (props) => <CustomAppBar {...props} />,
-                  title: t("service_providers_list")
-                })}
-              />
-              <Stack.Screen
-                name="Checkout"
-                component={CheckoutScreen}
-                options={({ navigation, route, options }) => ({
-                  header: (props) => <CustomAppBar {...props} />,
-                  title: t("checkout")
-                })}
-              />
-              {role === "consumer" ? <Stack.Screen
-                name="ConsumerProfile"
-                component={ConsumerProfileScreen}
-                options={({ navigation, route, options }) => ({
-                  header: (props) => <CustomAppBar {...props} />,
-                  title: t("profile")
-                })}
-              /> : <Stack.Screen
-                name="Profile"
-                component={ProfileScreen}
-                options={({ navigation, route, options }) => ({
-                  header: (props) => <CustomAppBar {...props} />,
-                  title: t("profile")
-                })}
-              />}
-              <Stack.Screen
-                name="Chat"
-                component={ChatPage}
-                options={({ navigation, route, options }) => ({
-                  header: (props) => <CustomAppBar {...props} />,
-                  title: t("message")
-                })}
-              />
-              {/* */}
-              {/* <Stack.Screen
-              name="ConsumerDashboard"
-              component={ConsumerDashboard}
-              options={({ navigation, route, options }) => ({
-                header: (props) => <CustomAppBar {...props} />,
-                title: t("profile")
-              })}
-            /> */}
-              <Stack.Screen
-                name="ServiceRequests"
-                component={ServiceRequestsScreen}
-                options={({ navigation, route, options }) => ({
-                  header: (props) => <CustomAppBar {...props} />,
-                  title: t("service_requests")
-                })}
-              />
-              <Stack.Screen
-                name="ConsumerSchedule"
-                component={ConsumerScheduleScreen}
-                options={({ navigation, route, options }) => ({
-                  header: (props) => <CustomAppBar {...props} />,
-                  title: t("order_confirmation_page")
-                })}
-              />
+              ))}
             </Stack.Navigator>
             <Toast />
           </NavigationContainer>
-        </Provider>
-      </SafeAreaProvider>
-    </I18nextProvider >
-
+        </SafeAreaProvider>
+      </I18nextProvider>
+    </Provider>
   );
-}
+};
 
+export default App;

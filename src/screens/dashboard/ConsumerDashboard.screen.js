@@ -1,14 +1,89 @@
 import { useTranslation } from "react-i18next";
 import { Image, ScrollView, StyleSheet, TouchableOpacity, View } from "react-native";
-import { Avatar, Text } from "react-native-paper";
+import { Avatar, Badge, Card, Text } from "react-native-paper";
 import { FontAwesome } from '@expo/vector-icons';
 import { MaterialIcons } from '@expo/vector-icons';
 import BottomBar from "../../components/common/BottomBar";
 import { globalStyles } from "../../styles/Global.styles";
+import FontAwesome6 from '@expo/vector-icons/FontAwesome6';
+import { cDstyles } from "./styles/ConsumerDashboard.styles";
+import { useEffect, useId, useState } from "react";
+import { getUserData } from "../../utility";
+import axios from "axios";
+import { userProfileUrl } from "../../api/routes";
+
+const AppointmentCard = ({ appointment }) => {
+    return (
+        <Card style={styles.card}>
+            <Card.Title
+                title={appointment.title}
+                subtitle={`${appointment.category} - ${appointment.subCategory}`}
+                right={() => (
+                    <Badge style={styles.badge} size={24} status={appointment.status === 'pending' ? 'secondary' : 'primary'}>
+                        {appointment.status}
+                    </Badge>
+                )}
+            />
+            <Card.Content>
+                <View style={styles.row}>
+                    <Avatar.Image size={48} source={{ uri: appointment.provider.avatar }} />
+                    <View style={styles.info}>
+                        <Text style={styles.name}>{appointment.provider.name}</Text>
+                        <Text style={styles.role}>Provider</Text>
+                    </View>
+                </View>
+                <View style={styles.row}>
+                    <Avatar.Image size={48} source={{ uri: appointment.consumer.avatar }} />
+                    <View style={styles.info}>
+                        <Text style={styles.name}>{appointment.consumer.name}</Text>
+                        <Text style={styles.role}>Consumer</Text>
+                    </View>
+                </View>
+            </Card.Content>
+            <Card.Actions style={styles.actions}>
+                {/* <View style={styles.iconRow}>
+                    {appointment.serviceBy.includes('video call') && <MaterialIcons name="videocam" size={24} color="black" />}
+                    {appointment.serviceBy.includes('audio call') && <MaterialIcons name="phone" size={24} color="black" />}
+                </View>
+                <View style={styles.iconRow}>
+                    <MaterialIcons name="calendar-today" size={24} color="black" />
+                    <Text style={styles.date}>
+                        {new Date(appointment.createdAt).toLocaleDateString()}
+                    </Text>
+                </View> */}
+                <Text style={styles.fee}>${appointment.fee}</Text>
+            </Card.Actions>
+        </Card>
+    );
+};
 
 export default function ConsumerDashboard({ navigation }) {
     const { t } = useTranslation();
+    const [appointments, setAppointments] = useState();
+    const [userData, setUserData] = useState(null);
 
+    const fetchUserData = async () => {
+        try {
+            const storedUserData = await getUserData();
+            if (storedUserData && storedUserData._id) {
+                const userId = storedUserData._id;
+
+                // Fetch user profile
+                const appointmentResponse = await axios.get(process.env.EXPO_PUBLIC_BASE + "/api/appointments/consumer/" + userId);
+                setAppointments(appointmentResponse.data);
+                const userResponse = await axios.get(userProfileUrl(userId));
+                setUserData(userResponse.data);
+
+            } else {
+                console.error("User data or user ID not found in storage");
+            }
+        } catch (error) {
+            console.error("Error fetching user data:", error);
+        }
+    };
+    useEffect(() => {
+        fetchUserData()
+    }, [])
     return (
 
         <View style={globalStyles.container}>
@@ -20,130 +95,47 @@ export default function ConsumerDashboard({ navigation }) {
                         flexDirection: "row",
                         columnGap: 12,
                     }}>
-                        <Image
-                            source={{
-                                uri: "https://randomuser.me/api/portraits/men/32.jpg"
-                            }}
-                            style={{
-                                height: "100%",
-                                width: 100,
-                                borderRadius: 8
-                            }}
-                        />
+
                         <View style={{ flex: 1 }}>
-                            <View>
-                                <Text style={{
-                                    fontSize: 24,
-                                    fontWeight: 'bold',
-                                    marginBottom: 10
-                                }}>
-                                    {t("name")}
-                                </Text>
-                                <Text style={{ marginBottom: 10 }}>
-                                    {t("farmer")}
-                                </Text>
-                            </View>
+
                             <View style={{
                                 flexDirection: "row",
                                 columnGap: 4,
-                                flexWrap: "wrap",
+                                flexWrap: "nowrap",
                             }}>
-                                <View style={{
-                                    backgroundColor: "#F3EFFE",
-                                    borderRadius: 4,
-                                    paddingVertical: 4,
-                                    paddingHorizontal: 6,
-                                    alignItems: "center",
-                                    width: 84
-                                }}>
-                                    <Text style={{ fontSize: 12 }}>
-                                        {t("rating")}
-                                    </Text>
-                                    <Text style={{
-                                        fontSize: 18,
-                                        fontWeight: 'bold',
-                                        marginBottom: 10
+
+                                {["cow", "goat", "hen", "duck", "fish"].map((n, idx) => {
+                                    return <View key={idx} style={{
+                                        backgroundColor: "#FFEFF7",
+                                        borderRadius: 4,
+                                        paddingVertical: 4,
+                                        paddingHorizontal: 6,
+                                        alignItems: "center",
+                                        width: 76,
+                                        height: 60,
+                                        alignItems: "center"
                                     }}>
-                                        4.5
-                                    </Text>
-                                    <Text style={{ marginBottom: 10 }}>
-                                        <FontAwesome name="star" size={14} color="#F5C547" />
-                                        <FontAwesome name="star" size={14} color="#F5C547" />
-                                        <FontAwesome name="star" size={14} color="#F5C547" />
-                                        <FontAwesome name="star" size={14} color="#F5C547" />
-                                        <FontAwesome name="star-half-empty" size={14} color="#F5C547" />
-                                    </Text>
-                                </View>
-                                <View style={{
-                                    backgroundColor: "#FFEFF7",
-                                    borderRadius: 4,
-                                    paddingVertical: 4,
-                                    paddingHorizontal: 6,
-                                    alignItems: "center",
-                                    width: 84
-                                }}>
-                                    <Text style={{ fontSize: 12 }}>
-                                        {t("service_count")}
-                                    </Text>
-                                    <Text style={{
-                                        fontSize: 18,
-                                        fontWeight: 'bold',
-                                        marginBottom: 10
-                                    }}>
-                                        4.5
-                                    </Text>
-                                    <Text style={{ marginBottom: 10 }}>
-                                        <FontAwesome name="star" size={12} color="#F5C547" />
-                                        <FontAwesome name="star" size={12} color="#F5C547" />
-                                        <FontAwesome name="star" size={12} color="#F5C547" />
-                                        <FontAwesome name="star" size={12} color="#F5C547" />
-                                        <FontAwesome name="star-half-empty" size={12} color="#F5C547" />
-                                    </Text>
-                                </View>
-                                <View style={{
-                                    backgroundColor: "#FFEFF7",
-                                    borderRadius: 4,
-                                    paddingVertical: 4,
-                                    alignItems: "center",
-                                    paddingHorizontal: 6,
-                                    width: 84
-                                }}>
-                                    <Text style={{ fontSize: 12 }}>
-                                        {t("points")}
-                                    </Text>
-                                    <Text style={{
-                                        fontSize: 18,
-                                        fontWeight: 'bold',
-                                        marginBottom: 10
-                                    }}>
-                                        4.5
-                                    </Text>
-                                    <Text style={{ marginBottom: 10 }}>
-                                        <FontAwesome name="star" size={14} color="#F5C547" />
-                                        <FontAwesome name="star" size={14} color="#F5C547" />
-                                        <FontAwesome name="star" size={14} color="#F5C547" />
-                                        <FontAwesome name="star" size={14} color="#F5C547" />
-                                        <FontAwesome name="star-half-empty" size={14} color="#F5C547" />
-                                    </Text>
-                                </View>
+                                        <Text style={{ fontSize: 12 }}>
+                                            {t(n)}
+                                        </Text>
+                                        <Text style={{
+                                            fontSize: 18,
+                                            fontWeight: 'bold',
+                                        }}>
+                                            {userData && userData[n]}
+                                        </Text>
+                                    </View>
+                                })}
                             </View>
                         </View>
                     </View>
-                    <View style={{ rowGap: 10 }}>
-                        <Text style={{ fontSize: 20, fontWeight: '600' }}>
-                            {t("description")}
-                        </Text>
-                        <Text>
-                            Lorem ipsum, dolor sit amet consectetur adipisicing elit. Voluptatum, exercitationem!
-                        </Text>
-                    </View>
-                    <View style={{ rowGap: 10 }}>
+                    {!appointments ? <View style={{ rowGap: 10 }}>
                         <View style={{
                             flexDirection: "row",
                             justifyContent: "space-between"
                         }}>
                             <Text style={{ fontSize: 20, fontWeight: '600' }}>
-                                {t("reviews")}
+                                {t("appointments")}
                             </Text>
                             <View style={{
                                 justifyContent: "center", alignItems: "center",
@@ -152,105 +144,70 @@ export default function ConsumerDashboard({ navigation }) {
                                 <Text style={{ color: "#6D30ED" }}> See All </Text><MaterialIcons name="keyboard-arrow-right" size={24} color="#6D30ED" />
                             </View>
                         </View>
-                        <View style={{
-                            backgroundColor: "#eee",
-                            padding: 18,
-                            borderRadius: 4,
-                            rowGap: 10
-                        }}>
-                            <View style={{
-                                justifyContent: "space-between",
-                                flexDirection: "row",
-                                alignItems: "center",
-                            }}>
-                                <View style={{
-                                    flexDirection: "row",
-                                    alignItems: "center",
-                                    marginBottom: 10,
-                                    columnGap: 12
-                                }}>
-                                    <Avatar.Image size={32} source={{
-                                        uri: "https://randomuser.me/api/portraits/men/32.jpg"
-                                    }} />
-                                    <View>
-                                        <Text style={{ fontWeight: 'bold' }}>
-                                            {t("name")}
-                                        </Text>
-                                        <Text>
-                                            A day ago
-                                        </Text>
-                                    </View>
-                                </View>
-                                <View style={{ flexDirection: "row" }}>
-                                    <FontAwesome name="star" size={14} color="#F5C547" />
-                                    <FontAwesome name="star" size={14} color="#F5C547" />
-                                    <FontAwesome name="star" size={14} color="#F5C547" />
-                                    <FontAwesome name="star" size={14} color="#F5C547" />
-                                    <FontAwesome name="star-half-empty" size={14} color="#F5C547" />
-                                </View>
+                        <View style={cDstyles.container}>
+                            <View style={cDstyles.content}>
+                                <FontAwesome6 name="calendar-xmark" size={48} />
+                                <Text style={cDstyles.title}>{t("noAppointmentsFound")}</Text>
+                                <Text style={cDstyles.subtitle}>{t("scheduleClear")}</Text>
                             </View>
-                            <Text>
-                                Lorem ipsum dolor sit ame Lorem, Lorem ipsum dolor sit amet.
-                                ipsum dolor....
-                            </Text>
+                            <TouchableOpacity style={[cDstyles.addButton]} onPress={() => navigation.navigate("Menu")}>
+                                <FontAwesome6 name="plus" size={24} />
+                                <Text style={cDstyles.buttonText}>{t("addNewAppointment")}</Text>
+                            </TouchableOpacity>
                         </View>
-                    </View>
-                    <View>
-                        <Text style={{ fontSize: 20, fontWeight: '600' }}>
-                            {t("service_time")}
-                        </Text>
-                        <View style={{
-                            flexDirection: "row",
-                            alignItems: "center",
-                            justifyContent: "space-between",
-                        }}>
-                            <View style={{
-                                flexDirection: "row",
-                                alignItems: "center",
-                                justifyContent: "center",
-                            }}>
-                                <View style={{
-                                    backgroundColor: "#68C6ED30",
-                                    width: 32,
-                                    height: 32,
-                                    borderRadius: 50,
-                                    justifyContent: "center",
-                                    alignItems: "center",
-                                    margin: 10
-                                }} >
-                                    <FontAwesome name="map-marker" size={20} color="#68C6ED" />
-                                </View>
-                                <View>
-                                    <Text>
-                                        11:00 - 8:00 AM
-                                    </Text>
-                                </View>
-                            </View>
-                            <MaterialIcons name="keyboard-arrow-right" size={24} color="#68C6ED" />
-                        </View>
-                    </View>
-                    <View>
-                        <Text style={{ fontSize: 20, fontWeight: '600', marginBottom: 20 }}>
-                            {t("service_requests")}
-                        </Text>
-                        <TouchableOpacity onPress={() => navigation.navigate("ServiceRequests")}>
+                    </View> : <View>
+                        {appointments.map(e => <AppointmentCard key={e._id} appointment={e} />)}</View>}
 
-                            <View style={{
-                                flexDirection: "row",
-                                columnGap: 10,
-                            }}>
-                                <Text style={{
-                                    color: "#68C6ED"
-                                }}>
-                                    {t("click_here")}
-                                </Text>
-                                <FontAwesome name="long-arrow-right" size={24} color="#68C6ED" />
-                            </View>
-                        </TouchableOpacity>
-                    </View>
+
                 </View>
             </ScrollView>
             <BottomBar navigation={navigation} />
         </View>
     );
 }
+
+
+const styles = StyleSheet.create({
+    card: {
+        margin: 10,
+        padding: 10,
+    },
+    badge: {
+        alignSelf: 'center',
+        marginRight: 10,
+    },
+    row: {
+        flexDirection: 'row',
+        alignItems: 'center',
+        marginBottom: 15,
+    },
+    info: {
+        marginLeft: 10,
+    },
+    name: {
+        fontSize: 16,
+        fontWeight: 'bold',
+    },
+    role: {
+        fontSize: 12,
+        color: 'gray',
+    },
+    actions: {
+        flexDirection: 'row',
+        justifyContent: 'space-between',
+        alignItems: 'center',
+    },
+    iconRow: {
+        flexDirection: 'row',
+        alignItems: 'center',
+    },
+    date: {
+        marginLeft: 5,
+        fontSize: 12,
+        color: 'gray',
+    },
+    fee: {
+        fontWeight: 'bold',
+        fontSize: 16,
+    },
+});

@@ -1,14 +1,15 @@
 import { Image, ScrollView, Text, View } from "react-native";
 import { useTranslation } from "react-i18next";
 import { Button, Checkbox } from "react-native-paper";
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import axios from 'axios';
 import { globalStyles } from "../../styles/Global.styles";
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { styles } from "./style/serviceProviderList.styles";
 import BottomBar from "../../components/common/BottomBar";
 
-const ProviderCard = ({ provider, checked, onPressCheckbox }) => (
-    <View key={provider.id} style={styles.providerCard}>
+const ProviderCard = ({ provider, isChecked, onPressCheckbox }) => (
+    <View key={provider._id} style={styles.providerCard}>
         <View style={styles.avatarContainer}>
             <Image source={{ uri: provider.avatar }} style={styles.avatar} />
         </View>
@@ -20,7 +21,7 @@ const ProviderCard = ({ provider, checked, onPressCheckbox }) => (
             <View style={styles.feeContainer}>
                 <Text style={styles.providerFee}>{provider.fee} ৳</Text>
                 <Checkbox
-                    status={checked ? 'checked' : 'unchecked'}
+                    status={isChecked ? 'checked' : 'unchecked'}
                     onPress={onPressCheckbox}
                 />
             </View>
@@ -28,32 +29,29 @@ const ProviderCard = ({ provider, checked, onPressCheckbox }) => (
     </View>
 );
 
-export function ServiceProviderListScreen({ navigation }) {
+export function ServiceProviderListScreen({ route, navigation }) {
     const { t } = useTranslation();
-    const [checked, setChecked] = useState({});
+    const [providers, setProviders] = useState([]);
+    const [selectedProvider, setSelectedProvider] = useState(null);
 
-    const providers = [
-        {
-            id: "1",
-            avatar: "https://randomuser.me/api/portraits/men/62.jpg",
-            name: "স্কট ডেভিস",
-            specialization: "পশু বিশেষজ্ঞ",
-            fee: "৫০",
-        },
-        {
-            id: "2",
-            avatar: "https://randomuser.me/api/portraits/women/79.jpg",
-            name: "এল্লা হিল",
-            specialization: "সিনিয়র পশু বিশেষজ্ঞ",
-            fee: "১০০",
-        },
-    ];
+    useEffect(() => {
+        // Fetch data from the API
+        const fetchProviders = async () => {
+            try {
+                const response = await axios.get(`${process.env.EXPO_PUBLIC_BASE}/api/user/service-providers`);
+                setProviders(response.data);
+            } catch (error) {
+                console.error("Error fetching data:", error);
+            }
+        };
 
-    const handleCheckboxPress = (id) => {
-        setChecked(prevState => ({
-            ...prevState,
-            [id]: !prevState[id]
-        }));
+        fetchProviders();
+    }, []);
+
+    const handleCheckboxPress = (provider) => {
+        setSelectedProvider(prevProvider =>
+            prevProvider && prevProvider._id === provider._id ? null : provider
+        );
     };
 
     return (
@@ -63,19 +61,24 @@ export function ServiceProviderListScreen({ navigation }) {
                     <View style={styles.providersContainer}>
                         {providers.map(provider => (
                             <ProviderCard
-                                key={provider.id}
+                                key={provider._id}
                                 provider={provider}
-                                checked={checked[provider.id]}
-                                onPressCheckbox={() => handleCheckboxPress(provider.id)}
+                                isChecked={selectedProvider?._id === provider._id}
+                                onPressCheckbox={() => handleCheckboxPress(provider)}
                             />
                         ))}
                     </View>
                     <View style={styles.submitButtonContainer}>
-
                         <Button
                             buttonColor="#6D30ED"
                             textColor="white"
-                            onPress={() => navigation.navigate("Checkout")} 
+                            onPress={() => navigation.navigate("Checkout", {
+                                provider: selectedProvider?._id,
+                                fee: selectedProvider?.fee,
+                                specialization: selectedProvider?.specialization,
+                                ...route.params
+                            })}
+                            disabled={!selectedProvider} 
                         >
                             {t("submit")}
                         </Button>
@@ -83,7 +86,6 @@ export function ServiceProviderListScreen({ navigation }) {
                 </View>
             </ScrollView>
             <BottomBar navigation={navigation} />
-
         </SafeAreaView>
     );
 }

@@ -23,7 +23,7 @@ const BottomBar = ({ navigation }) => {
 
     const handleLogout = async () => {
         await AsyncStorage.removeItem('userData');
-        navigation.navigate('Login');
+        await navigation.navigate('Login');
     };
 
     const menuItems = [
