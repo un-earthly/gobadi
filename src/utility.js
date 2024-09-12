@@ -13,3 +13,4 @@ export async function getUserData() {
         console.error('Error retrieving user data:', error);
     }
 }
+

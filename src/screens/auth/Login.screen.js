@@ -1,33 +1,39 @@
-import { Image, ScrollView, Text, TextInput, TouchableOpacity, View } from "react-native";
+import React, { useState } from 'react';
+import { Image, ScrollView, Text, TouchableOpacity, View } from "react-native";
 import { useTranslation } from "react-i18next";
 import { commonStyles } from "./styles/Common.styles";
-import { useState } from "react";
 import { Button } from "react-native-paper";
 import { SafeAreaView } from "react-native-safe-area-context";
 import Input from "../../components/ScreenBasedComponent/Auth/Input.js";
-import axios from "axios";
 import Toast from "react-native-toast-message";
 
-export default function LoginScreen({ navigation, handleLogin, loading,setPassword, password,phone,setPhone}) {
+export default function LoginScreen({ navigation, handleLogin, loading }) {
     const { t } = useTranslation();
+    const [phone, setPhone] = useState("");
+    const [password, setPassword] = useState("");
 
-    // const validateForm = () => {
-    //     if (!phone || !password) {
-    //         Toast.show({
-    //             type: 'error',
-    //             text1: t("validation_error"),
-    //             text2: t("fields_required")
-    //         });
-    //         return false;
-    //     }
-    //     return true;
-    // };
+    const validateForm = () => {
+        if (!phone || !password) {
+            Toast.show({
+                type: 'error',
+                text1: t("validation_error"),
+                text2: t("fields_required")
+            });
+            return false;
+        }
+        return true;
+    };
+
+    const onLogin = () => {
+        if (validateForm()) {
+            handleLogin(navigation, phone, password);
+        }
+    };
+
     return (
         <SafeAreaView style={commonStyles.container}>
-            <ScrollView >
-
+            <ScrollView>
                 <View style={commonStyles.wrapper}>
-
                     <Image
                         source={require("../../../assets/adaptive-icon.png")}
                         style={{
@@ -57,11 +63,12 @@ export default function LoginScreen({ navigation, handleLogin, loading,setPasswo
                     />
                     <View style={commonStyles.btn_container}>
                         <Button
-                            onPress={handleLogin}
+                            onPress={onLogin}
                             buttonColor="#6D30ED"
                             textColor="white"
                             loading={loading}
-                        >{t("login")}
+                        >
+                            {t("login")}
                         </Button>
                     </View>
                     <View style={commonStyles.footer}>
@@ -78,7 +85,6 @@ export default function LoginScreen({ navigation, handleLogin, loading,setPasswo
                     </View>
                 </View>
             </ScrollView>
-
         </SafeAreaView>
     )
 }

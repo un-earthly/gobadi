@@ -12,37 +12,30 @@ import './i18n';
 import { loginUrl } from './src/api/routes';
 import CustomAppBar from './src/components/common/CustomAppBar';
 import { consumerScreens, providerScreens, authScreens } from './screenConfig.js';
+import { getUserData } from './src/utility.js';
 
 const Stack = createNativeStackNavigator();
 
 const App = () => {
   const { i18n, t } = useTranslation();
   const [role, setRole] = useState(null);
-  const [initialRoute, setInitialRoute] = useState('Login');
   const [isLoading, setIsLoading] = useState(true);
-  const [phone, setPhone] = useState("");
-  const [password, setPassword] = useState("");
+  const [isAuthenticated, setIsAuthenticated] = useState(false);
 
   const loadUserData = useCallback(async () => {
     try {
-      const userData = await AsyncStorage.getItem('userData');
+      const userData = await getUserData();
       if (userData) {
-        const parsedUserData = JSON.parse(userData);
-        // if (parsedUserData.token) {
-        setRole(parsedUserData.role);
-        setInitialRoute('Dashboard');
-        // } else {
-        //   setRole(null);
-        //   setInitialRoute('Login');
-        // }
+        setRole(userData.role);
+        setIsAuthenticated(true);
       } else {
         setRole(null);
-        setInitialRoute('Login');
+        setIsAuthenticated(false);
       }
     } catch (error) {
       console.error('Failed to load user data:', error);
       setRole(null);
-      setInitialRoute('Login');
+      setIsAuthenticated(false);
     } finally {
       setIsLoading(false);
     }
@@ -52,13 +45,18 @@ const App = () => {
     loadUserData();
   }, [loadUserData]);
 
-  const handleLogin = async (navigation) => {
+  const handleLogin = async (navigation, phone, password) => {
     setIsLoading(true);
     try {
       const response = await axios.post(loginUrl, { mobile: phone, password });
       await AsyncStorage.setItem("userData", JSON.stringify(response.data));
+      setRole(response.data.role);
+      setIsAuthenticated(true);
       setIsLoading(false);
-      navigation.navigate("Dashboard");
+      navigation.reset({
+        index: 0,
+        routes: [{ name: 'Dashboard' }],
+      });
       Toast.show({
         type: 'success',
         text1: t("login_success"),
@@ -86,42 +84,44 @@ const App = () => {
       <I18nextProvider i18n={i18n}>
         <SafeAreaProvider>
           <NavigationContainer>
-            <Stack.Navigator initialRouteName={initialRoute}>
-              {authScreens.map(screen => (
-                <Stack.Screen
-                  key={screen.name}
-                  name={screen.name}
-                  options={{ headerShown: false }}
-                >
-                  {(props) => (
-                    <screen.component
-                      {...props}
-                      handleLogin={() => handleLogin(props.navigation)}
-                      loading={isLoading}
-                      password={password}
-                      phone={phone}
-                      setPassword={setPassword}
-                      setPhone={setPhone}
+            <Stack.Navigator>
+              {isAuthenticated ? (
+                <Stack.Group>
+                  {screenConfig.map(screen => (
+                    <Stack.Screen
+                      key={screen.name}
+                      name={screen.name}
+                      component={screen.component}
+                      options={({ navigation }) => ({
+                        header: (props) => (
+                          <CustomAppBar
+                            screen={screen.name.toLowerCase()}
+                            {...props}
+                          />
+                        ),
+                        title: t(screen.titleKey || screen.name.toLowerCase())
+                      })}
                     />
-                  )}
-                </Stack.Screen>
-              ))}
-              {screenConfig.map(screen => (
-                <Stack.Screen
-                  key={screen.name}
-                  name={screen.name}
-                  component={screen.component}
-                  options={({ navigation }) => ({
-                    header: (props) => (
-                      <CustomAppBar
-                        screen={screen.name.toLowerCase()}
-                        {...props}
-                      />
-                    ),
-                    title: t(screen.titleKey || screen.name.toLowerCase())
-                  })}
-                />
-              ))}
+                  ))}
+                </Stack.Group>
+              ) : (
+                <Stack.Group screenOptions={{ headerShown: false }}>
+                  {authScreens.map(screen => (
+                    <Stack.Screen
+                      key={screen.name}
+                      name={screen.name}
+                    >
+                      {(props) => (
+                        <screen.component
+                          {...props}
+                          handleLogin={handleLogin}
+                          loading={isLoading}
+                        />
+                      )}
+                    </Stack.Screen>
+                  ))}
+                </Stack.Group>
+              )}
             </Stack.Navigator>
             <Toast />
           </NavigationContainer>
