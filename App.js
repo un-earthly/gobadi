@@ -28,13 +28,13 @@ const App = () => {
       const userData = await AsyncStorage.getItem('userData');
       if (userData) {
         const parsedUserData = JSON.parse(userData);
-        if (parsedUserData.token) {
-          setRole(parsedUserData.role);
-          setInitialRoute('Dashboard');
-        } else {
-          setRole(null);
-          setInitialRoute('Login');
-        }
+        // if (parsedUserData.token) {
+        setRole(parsedUserData.role);
+        setInitialRoute('Dashboard');
+        // } else {
+        //   setRole(null);
+        //   setInitialRoute('Login');
+        // }
       } else {
         setRole(null);
         setInitialRoute('Login');

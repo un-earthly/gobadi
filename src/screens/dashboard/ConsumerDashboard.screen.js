@@ -41,16 +41,6 @@ const AppointmentCard = ({ appointment }) => {
                 </View>
             </Card.Content>
             <Card.Actions style={styles.actions}>
-                {/* <View style={styles.iconRow}>
-                    {appointment.serviceBy.includes('video call') && <MaterialIcons name="videocam" size={24} color="black" />}
-                    {appointment.serviceBy.includes('audio call') && <MaterialIcons name="phone" size={24} color="black" />}
-                </View>
-                <View style={styles.iconRow}>
-                    <MaterialIcons name="calendar-today" size={24} color="black" />
-                    <Text style={styles.date}>
-                        {new Date(appointment.createdAt).toLocaleDateString()}
-                    </Text>
-                </View> */}
                 <Text style={styles.fee}>${appointment.fee}</Text>
             </Card.Actions>
         </Card>
@@ -59,19 +49,22 @@ const AppointmentCard = ({ appointment }) => {
 
 export default function ConsumerDashboard({ navigation }) {
     const { t } = useTranslation();
-    const [appointments, setAppointments] = useState();
+    const [appointments, setAppointments] = useState(null);
     const [userData, setUserData] = useState(null);
 
     const fetchUserData = async () => {
         try {
             const storedUserData = await getUserData();
-            if (storedUserData && storedUserData._id) {
+            if (storedUserData?._id) {
                 const userId = storedUserData._id;
 
-                // Fetch user profile
-                const appointmentResponse = await axios.get(process.env.EXPO_PUBLIC_BASE + "/api/appointments/consumer/" + userId);
+                // Fetch appointments and user profile concurrently
+                const [appointmentResponse, userResponse] = await Promise.all([
+                    axios.get(`${process.env.EXPO_PUBLIC_BASE}/api/appointments/consumer/${userId}`),
+                    axios.get(userProfileUrl(userId))
+                ]);
+                console.log(appointmentResponse.data)
                 setAppointments(appointmentResponse.data);
-                const userResponse = await axios.get(userProfileUrl(userId));
                 setUserData(userResponse.data);
 
             } else {
@@ -81,9 +74,10 @@ export default function ConsumerDashboard({ navigation }) {
             console.error("Error fetching user data:", error);
         }
     };
+
     useEffect(() => {
-        fetchUserData()
-    }, [])
+        fetchUserData();
+    }, []);
     return (
 
         <View style={globalStyles.container}>
@@ -129,7 +123,7 @@ export default function ConsumerDashboard({ navigation }) {
                             </View>
                         </View>
                     </View>
-                    {!appointments ? <View style={{ rowGap: 10 }}>
+                    {!appointments || !appointments.length > 0 ? <View style={{ rowGap: 10 }}>
                         <View style={{
                             flexDirection: "row",
                             justifyContent: "space-between"
@@ -155,8 +149,11 @@ export default function ConsumerDashboard({ navigation }) {
                                 <Text style={cDstyles.buttonText}>{t("addNewAppointment")}</Text>
                             </TouchableOpacity>
                         </View>
-                    </View> : <View>
-                        {appointments.map(e => <AppointmentCard key={e._id} appointment={e} />)}</View>}
+                    </View> :
+                        <View>
+                            {appointments.map(e => <AppointmentCard key={e._id} appointment={e} />)}
+                        </View>
+                    }
 
 
                 </View>

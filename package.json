@@ -18,8 +18,10 @@
     "@react-navigation/native": "^6.1.18",
     "@react-navigation/native-stack": "^6.10.1",
     "axios": "^1.7.3",
+    "eas": "^0.1.0",
     "expo": "~51.0.31",
     "expo-clipboard": "~6.0.3",
+    "expo-image": "~1.12.15",
     "expo-image-picker": "^15.0.7",
     "expo-localization": "^15.0.3",
     "expo-media-library": "^16.0.4",
@@ -44,8 +46,7 @@
     "react-native-screens": "3.31.1",
     "react-native-splash-screen": "^3.3.0",
     "react-native-toast-message": "^2.2.0",
-    "react-native-web": "~0.19.10",
-    "expo-image": "~1.12.15"
+    "react-native-web": "~0.19.10"
   },
   "devDependencies": {
     "@babel/core": "^7.20.0"
