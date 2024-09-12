@@ -6,6 +6,7 @@ import { collection, addDoc, query, orderBy, onSnapshot, serverTimestamp, where,
 import { signInWithCustomToken, getAuth } from 'firebase/auth';
 import axios from 'axios';
 import { Button } from 'react-native-paper';
+import { useTranslation } from 'react-i18next';
 
 const ChatScreen = () => {
     const [appointments, setAppointments] = useState([]);
@@ -15,7 +16,7 @@ const ChatScreen = () => {
     const [userData, setUserData] = useState(null);
     const [isLoading, setIsLoading] = useState(true);
     const [error, setError] = useState(null);
-
+    const { t } = useTranslation()
     useEffect(() => {
         const fetchUserData = async () => {
             try {
@@ -107,9 +108,9 @@ const ChatScreen = () => {
         <TouchableOpacity onPress={() => setSelectedAppointment(item)} style={styles.appointmentItem}>
             <Text style={styles.appointmentTitle}>{item.title}</Text>
             <Text style={styles.appointmentInfo}>
-                {userData.role === 'provider' ? `Consumer: ${item.consumer}` : `Provider: ${item.provider}`}
+                {userData.role === 'provider' ? `${t('consumer')}: ${item.consumer.name}` : `${t('provider')}: ${item.provider.name}`}
             </Text>
-            <Text style={styles.appointmentInfo}>Date: {new Date(item.appointmentSchedule).toLocaleString()}</Text>
+            <Text style={styles.appointmentInfo}>{t("date")}: {new Date(item.appointmentSchedule).toLocaleString()}</Text>
         </TouchableOpacity>
     );
 
@@ -148,7 +149,7 @@ const ChatScreen = () => {
     if (!selectedAppointment) {
         return (
             <View style={styles.container}>
-                <Text style={styles.headerText}>Your Appointments</Text>
+                <Text style={styles.headerText}>{t("your_messages")}</Text>
                 {appointments.length === 0 ? (
                     <Text style={styles.noAppointmentsText}>No appointments found.</Text>
                 ) : (

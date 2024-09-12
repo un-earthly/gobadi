@@ -28,14 +28,6 @@ export default function ProviderDashboard({ navigation }) {
                 // Fetch user profile
                 const userResponse = await axios.get(userProfileUrl(userId));
                 setUserData(userResponse.data);
-
-                // Fetch user reviews
-                const reviewsResponse = await axios.get(userReviewsUrl(userId));
-                setUserReviews(reviewsResponse.data);
-
-                // Fetch user rating
-                const ratingResponse = await axios.get(userRatingsUrl(userId));
-                setUserRating(ratingResponse.data);
             } else {
                 console.error("User data or user ID not found in storage");
             }
@@ -57,7 +49,7 @@ export default function ProviderDashboard({ navigation }) {
                     }}>
                         <Image
                             source={{
-                                uri: "https://randomuser.me/api/portraits/men/32.jpg"
+                                uri: userData?.avatar
                             }}
                             style={{
                                 height: "100%",
@@ -72,10 +64,11 @@ export default function ProviderDashboard({ navigation }) {
                                     fontWeight: 'bold',
                                     marginBottom: 10
                                 }}>
-                                    {t("name")}
+                                    {userData && userData?.name}
                                 </Text>
                                 <Text style={{ marginBottom: 10 }}>
-                                    {t("senior_specialist")}
+                                    {/* {t("senior_specialist")} */}
+                                    {userData?.specialization}
                                 </Text>
                             </View>
                             <View style={{
@@ -99,7 +92,7 @@ export default function ProviderDashboard({ navigation }) {
                                         fontWeight: 'bold',
                                         marginBottom: 10
                                     }}>
-                                        4.5
+                                        3.00
                                     </Text>
                                     <Text style={{ marginBottom: 10 }}>
                                         <FontAwesome name="star" size={14} color="#F5C547" />
@@ -151,7 +144,7 @@ export default function ProviderDashboard({ navigation }) {
                                         fontWeight: 'bold',
                                         marginBottom: 10
                                     }}>
-                                        4.5
+                                        90
                                     </Text>
                                     <Text style={{ marginBottom: 10 }}>
                                         <FontAwesome name="star" size={14} color="#F5C547" />

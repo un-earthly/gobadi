@@ -1,4 +1,5 @@
-const base = process.env.EXPO_PUBLIC_BASE || "http://10.0.2.2:8080";
+const base = process.env.EXPO_PUBLIC_BASE
+    // || "http://10.0.2.2:8080";
 const authUserBase = base + "/api/auth";
 const authAdminBase = base + "/auth/admin";
 export const loginUrl = authUserBase + "/login";
