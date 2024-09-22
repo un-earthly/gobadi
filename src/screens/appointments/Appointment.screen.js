@@ -5,7 +5,6 @@ import { useTranslation } from "react-i18next";
 import DateTimePicker from '@react-native-community/datetimepicker';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import BottomBar from "../../components/common/BottomBar";
-import { globalStyles } from "../../styles/Global.styles";
 import { getUserData } from '../../utility';
 import axios from 'axios';
 
@@ -27,8 +26,9 @@ export default function AppointmentsPage({ navigation }) {
     const fetchData = async () => {
         try {
             setIsLoading(true);
-            const { _id } = await getUserData();
-            const response = await axios.get(`${process.env.EXPO_PUBLIC_BASE}/api/appointments/provider/${_id}`);
+            const { user } = await getUserData();
+            const response = await axios.get(`${process.env.EXPO_PUBLIC_BASE}/api/appointments/provider/${user._id}`);
+            console.log(response.data)
             setServiceRequests(response.data);
         } catch (error) {
             console.error(error.message);
@@ -78,7 +78,7 @@ export default function AppointmentsPage({ navigation }) {
             await axios.put(url, updateData);
 
             setIsModalVisible(false);
-            fetchData(); // Refresh the appointments list
+            fetchData();
         } catch (error) {
             console.error('Error updating appointment:', error);
         } finally {
@@ -92,30 +92,40 @@ export default function AppointmentsPage({ navigation }) {
                 <Text style={styles.title}>{t("appointment_requests")}</Text>
                 {isLoading ? (
                     <ActivityIndicator size="large" color="#0000ff" />
-                ) : (
-                    serviceRequests.map((request) => (
-                        <Card key={request._id} style={styles.card}>
-                            <Card.Content>
-                                <Text style={styles.cardTitle}>{request.title}</Text>
-                                <Text>{t("category")}: {request.category}</Text>
-                                <Text>{t("sub_category")}: {request.subCategory}</Text>
-                                <Text>{t("status")}: {t(`status_${request.status}`)}</Text>
-                                <Text>{t("fee")}: {request.fee}</Text>
-                                {request.appointmentSchedule && (
-                                    <Text>{t("scheduled_for")}: {new Date(request.appointmentSchedule).toLocaleString()}</Text>
-                                )}
-                            </Card.Content>
-                            <Card.Actions>
-                                <Button
-                                    mode="contained"
-                                    onPress={() => handleScheduleAppointment(request)}
-                                >
-                                    {request.appointmentSchedule ? t("reschedule_appointment") : t("schedule_appointment")}
-                                </Button>
-                            </Card.Actions>
-                        </Card>
-                    ))
-                )}
+                ) : <View>
+
+                    {
+                        (serviceRequests && serviceRequests.length > 0) ? serviceRequests?.map((request) => (
+                            <Card key={request._id} style={styles.card}>
+                                <Card.Content>
+                                    <Text style={styles.cardTitle}>{request.title}</Text>
+                                    <Text>{t("category")}: {request.category}</Text>
+                                    <Text>{t("sub_category")}: {request.subCategory}</Text>
+                                    <Text>{t("status")}: {t(`status_${request.status}`)}</Text>
+                                    <Text>{t("fee")}: {request.fee}</Text>
+                                    {request.appointmentSchedule && (
+                                        <Text>{t("scheduled_for")}: {new Date(request?.appointmentSchedule).toLocaleString()}</Text>
+                                    )}
+                                </Card.Content>
+                                <Card.Actions>
+                                    <Button
+                                        mode="contained"
+                                        onPress={() => handleScheduleAppointment(request)}
+                                    >
+                                        {request.appointmentSchedule ? t("reschedule_appointment") : t("schedule_appointment")}
+                                    </Button>
+                                </Card.Actions>
+                            </Card>
+                        )) : <Surface style={styles.surface}>
+                            <View style={styles.content}>
+                                <IconButton icon="alert-circle-outline" size={40} color="#6200ea" />
+                                <Text style={styles.text}>{t("noAppointmentsFound")}</Text>
+                            </View>
+                        </Surface>
+                    }
+
+
+                </View>}
             </ScrollView>
 
             <Portal>
@@ -195,7 +205,7 @@ const styles = StyleSheet.create({
     },
     scrollViewContent: {
         flexGrow: 1,
-        paddingBottom: 80, // Adjust this value based on your BottomBar height
+        paddingBottom: 80,
     },
     title: {
         fontSize: 24,
@@ -255,5 +265,23 @@ const styles = StyleSheet.create({
     actionButton: {
         flex: 1,
         marginHorizontal: 5,
+    },
+    surface: {
+        padding: 20,
+        margin: 20,
+        borderRadius: 8,
+        elevation: 4,
+        justifyContent: 'center',
+        alignItems: 'center',
+        backgroundColor: '#f5f5f5',
+    },
+    content: {
+        alignItems: 'center',
+    },
+    text: {
+        fontSize: 18,
+        marginTop: 10,
+        fontWeight: 'bold',
+        color: '#6200ea',
     },
 });

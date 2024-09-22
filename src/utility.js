@@ -5,8 +5,9 @@ export async function getUserData() {
         const userData = await AsyncStorage.getItem("userData");
         if (userData !== null) {
             // We have data!!
+
             const parsedUserData = JSON.parse(userData);
-            console.log('Retrieved user data:', parsedUserData);
+            // console.log('Retrieved user data:', parsedUserData);
             return parsedUserData;
         }
     } catch (error) {

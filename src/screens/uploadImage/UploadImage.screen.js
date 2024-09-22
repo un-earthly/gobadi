@@ -8,22 +8,60 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import BottomBar from '../../components/common/BottomBar';
 import { Button, ActivityIndicator } from 'react-native-paper';
 import { Ionicons } from '@expo/vector-icons';
+import { getDownloadURL, ref, uploadBytes } from 'firebase/storage';
+import { storage } from '../../../firebaseConfig';
 
 const MAX_IMAGES = 10;
 
-export default function UploadImageScreen({route, navigation }) {
+export default function UploadImageScreen({ route, navigation }) {
 
     const { t } = useTranslation();
     const [images, setImages] = useState([]);
     const [uploading, setUploading] = useState(false);
 
     const handleImagePick = async () => {
-        const { status } = await ImagePicker.requestMediaLibraryPermissionsAsync();
-        if (status !== 'granted') {
-            Alert.alert('Permission Denied', 'Sorry, we need camera roll permissions to make this work!');
+        const cameraPermission = await ImagePicker.requestCameraPermissionsAsync();
+        const libraryPermission = await ImagePicker.requestMediaLibraryPermissionsAsync();
+
+        if (cameraPermission.status !== 'granted' || libraryPermission.status !== 'granted') {
+            Alert.alert('Permission Denied', 'Sorry, we need camera and camera roll permissions to make this work!');
             return;
         }
 
+        const options = ['Take a photo', 'Choose from gallery', 'Cancel'];
+        Alert.alert(
+            'Upload Image',
+            'Choose an option',
+            [
+                {
+                    text: options[0],
+                    onPress: () => launchCamera(),
+                },
+                {
+                    text: options[1],
+                    onPress: () => launchImageLibrary(),
+                },
+                {
+                    text: options[2],
+                    style: 'cancel',
+                },
+            ],
+            { cancelable: true }
+        );
+    };
+
+
+    const launchCamera = async () => {
+        let result = await ImagePicker.launchCameraAsync({
+            mediaTypes: ImagePicker.MediaTypeOptions.Images,
+            aspect: [4, 3],
+            quality: 1,
+        });
+
+        handleImageResult(result);
+    };
+
+    const launchImageLibrary = async () => {
         let result = await ImagePicker.launchImageLibraryAsync({
             mediaTypes: ImagePicker.MediaTypeOptions.Images,
             allowsMultipleSelection: true,
@@ -31,6 +69,10 @@ export default function UploadImageScreen({route, navigation }) {
             quality: 1,
         });
 
+        handleImageResult(result);
+    };
+
+    const handleImageResult = (result) => {
         if (!result.canceled) {
             const newImages = result.assets.map(asset => ({ uri: asset.uri }));
             if (images.length + newImages.length > MAX_IMAGES) {
@@ -46,24 +88,20 @@ export default function UploadImageScreen({route, navigation }) {
         setImages(prevImages => prevImages.filter((_, i) => i !== index));
     };
 
-    const uploadToImageBB = async (imageUri) => {
-        const formData = new FormData();
-        formData.append('image', {
-            uri: imageUri,
-            type: 'image/jpeg',
-            name: 'upload.jpg',
-        });
 
-        const response = await fetch(`https://api.imgbb.com/1/upload?key=${process.env.EXPO_PUBLIC_IMGBB}`, {
-            method: 'POST',
-            body: formData,
-        });
+    const uploadImage = async (uri) => {
+        try {
+            const response = await fetch(uri);
+            const blob = await response.blob();
+            const filename = `${Date.now()}-photo.jpg`;
+            const storageRef = ref(storage, filename);
 
-        const data = await response.json();
-        if (data.success) {
-            return data.data.url;
-        } else {
-            throw new Error('Upload failed');
+            await uploadBytes(storageRef, blob);
+            const url = await getDownloadURL(storageRef);
+            return url;
+        } catch (error) {
+            console.error('Error uploading image:', error);
+            throw error;
         }
     };
 
@@ -75,10 +113,9 @@ export default function UploadImageScreen({route, navigation }) {
 
         setUploading(true);
         try {
-            const uploadPromises = images.map(image => uploadToImageBB(image.uri));
+            const uploadPromises = images.map(image => uploadImage(image.uri));
             const uploadedUrls = await Promise.all(uploadPromises);
 
-            // Navigate to the next page with the array of URLs and description
             navigation.navigate("ProceedFurther", {
                 images: uploadedUrls,
                 ...route.params

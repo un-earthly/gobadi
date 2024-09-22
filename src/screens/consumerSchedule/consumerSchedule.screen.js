@@ -43,7 +43,7 @@ const ConsumerScheduleScreen = ({ route, navigation }) => {
                     <InfoRow label={t("sub_category")} value={subCategory} />
                     <InfoRow label={t("specialization")} value={specialization} />
                     <InfoRow label={t("fee")} value={`৳${fee}`} />
-                    <InfoRow label={t("payment_method")} value={paymentMethod} />
+                    <InfoRow label={t("payment_method")} value={paymentMethod === "first" ? t("bkash") : t("nagad")} />
                 </View>
 
                 <View style={styles.card}>

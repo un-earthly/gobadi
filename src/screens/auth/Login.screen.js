@@ -6,14 +6,16 @@ import { Button } from "react-native-paper";
 import { SafeAreaView } from "react-native-safe-area-context";
 import Input from "../../components/ScreenBasedComponent/Auth/Input.js";
 import Toast from "react-native-toast-message";
+import { useAuth } from '../../context/AuthContext';
 
-export default function LoginScreen({ navigation, handleLogin, loading }) {
+export default function LoginScreen({ navigation }) {
     const { t } = useTranslation();
-    const [phone, setPhone] = useState("");
+    const [mobile, setMobile] = useState("");
     const [password, setPassword] = useState("");
+    const { login, isLoading } = useAuth();
 
     const validateForm = () => {
-        if (!phone || !password) {
+        if (!mobile || !password) {
             Toast.show({
                 type: 'error',
                 text1: t("validation_error"),
@@ -24,9 +26,29 @@ export default function LoginScreen({ navigation, handleLogin, loading }) {
         return true;
     };
 
-    const onLogin = () => {
+    const onLogin = async () => {
         if (validateForm()) {
-            handleLogin(navigation, phone, password);
+            try {
+                const response = await login(mobile, password);
+                if (response) {
+
+                    Toast.show({
+                        type: 'success',
+                        text1: t("success.registrationSuccessful"),
+                        text2: `${t("success.registrationSuccessful")}`,
+                        visibilityTime: 10000,
+                        topOffset: 50,
+                        position: 'top',
+                    });
+                    // navigation.navigate("Dashboard")
+                }
+            } catch (error) {
+                Toast.show({
+                    type: 'error',
+                    text1: t("login_error"),
+                    text2: error.message || t("something_went_wrong")
+                });
+            }
         }
     };
 
@@ -48,10 +70,10 @@ export default function LoginScreen({ navigation, handleLogin, loading }) {
                     </Text>
                     <Input
                         label={t("mobile")}
-                        id="phone"
+                        id="mobile"
                         placeholder={t("your_phone")}
-                        value={phone}
-                        onChangeText={setPhone}
+                        value={mobile}
+                        onChangeText={setMobile}
                     />
                     <Input
                         label={t("password")}
@@ -66,7 +88,7 @@ export default function LoginScreen({ navigation, handleLogin, loading }) {
                             onPress={onLogin}
                             buttonColor="#6D30ED"
                             textColor="white"
-                            loading={loading}
+                            loading={isLoading}
                         >
                             {t("login")}
                         </Button>

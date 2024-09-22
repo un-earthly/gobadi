@@ -5,7 +5,7 @@ import { db } from '../../../firebaseConfig';
 import { collection, addDoc, query, orderBy, onSnapshot, serverTimestamp, where, getFirestore } from 'firebase/firestore';
 import { signInWithCustomToken, getAuth } from 'firebase/auth';
 import axios from 'axios';
-import { Button } from 'react-native-paper';
+import { Button, IconButton, Surface } from 'react-native-paper';
 import { useTranslation } from 'react-i18next';
 
 const ChatScreen = () => {
@@ -110,7 +110,7 @@ const ChatScreen = () => {
             <Text style={styles.appointmentInfo}>
                 {userData.role === 'provider' ? `${t('consumer')}: ${item.consumer.name}` : `${t('provider')}: ${item.provider.name}`}
             </Text>
-            <Text style={styles.appointmentInfo}>{t("date")}: {new Date(item.appointmentSchedule).toLocaleString()}</Text>
+            <Text style={styles.appointmentInfo}>{t("appointment_date")}: {new Date(item.appointmentSchedule).toLocaleString()}</Text>
         </TouchableOpacity>
     );
 
@@ -151,7 +151,12 @@ const ChatScreen = () => {
             <View style={styles.container}>
                 <Text style={styles.headerText}>{t("your_messages")}</Text>
                 {appointments.length === 0 ? (
-                    <Text style={styles.noAppointmentsText}>No appointments found.</Text>
+                    <Surface style={styles.surface}>
+                        <View style={styles.content}>
+                            <IconButton icon="alert-circle-outline" size={40} color="#6200ea" />
+                            <Text style={styles.text}>{t("noMessageFound")}</Text>
+                        </View>
+                    </Surface>
                 ) : (
                     <FlatList
                         data={appointments}
@@ -270,6 +275,24 @@ const styles = StyleSheet.create({
         fontSize: 16,
         textAlign: 'center',
         marginTop: 20,
+    },
+    surface: {
+        padding: 20,
+        margin: 20,
+        borderRadius: 8,
+        elevation: 4,
+        justifyContent: 'center',
+        alignItems: 'center',
+        backgroundColor: '#f5f5f5',
+    },
+    content: {
+        alignItems: 'center',
+    },
+    text: {
+        fontSize: 18,
+        marginTop: 10,
+        fontWeight: 'bold',
+        color: '#6200ea',
     },
 });
 

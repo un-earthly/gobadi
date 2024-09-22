@@ -15,7 +15,7 @@ const RenderRoleItem = ({ role, checked, setChecked }) => {
             status={checked === role.value ? 'checked' : 'unchecked'}
             onPress={() => setChecked(role.value)}
         />
-        <Text>{t(role.label)}</Text>
+        <Text>{t(`role.${role.label}`)}</Text>
     </TouchableOpacity>
 };
 

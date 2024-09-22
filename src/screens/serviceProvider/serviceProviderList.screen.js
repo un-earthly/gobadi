@@ -16,7 +16,7 @@ const ProviderCard = ({ provider, isChecked, onPressCheckbox }) => (
         <View style={styles.providerInfo}>
             <View>
                 <Text style={styles.providerName}>{provider.name}</Text>
-                <Text style={styles.providerSpecialization}>{provider.specialization}</Text>
+                <Text style={styles.providerSpecialization}>{provider.designation}</Text>
             </View>
             <View style={styles.feeContainer}>
                 <Text style={styles.providerFee}>{provider.fee} ৳</Text>
@@ -75,10 +75,10 @@ export function ServiceProviderListScreen({ route, navigation }) {
                             onPress={() => navigation.navigate("Checkout", {
                                 provider: selectedProvider?._id,
                                 fee: selectedProvider?.fee,
-                                specialization: selectedProvider?.specialization,
+                                designation: selectedProvider?.designation,
                                 ...route.params
                             })}
-                            disabled={!selectedProvider} 
+                            disabled={!selectedProvider}
                         >
                             {t("submit")}
                         </Button>
