@@ -103,6 +103,7 @@ export default function AppointmentsPage({ navigation }) {
                     {
                         (serviceRequests && serviceRequests.length > 0) ? serviceRequests?.map((request) => (
                             <ProviderAppointmentCard
+                                key={request._id}
                                 appointment={request}
                                 onConfirm={(appointmentId) => confirmAppointment(appointmentId)}
                                 onReject={(appointmentId) => cancelAppointment(appointmentId)}

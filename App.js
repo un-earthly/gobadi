@@ -16,12 +16,11 @@ const Stack = createNativeStackNavigator();
 const AppContent = () => {
   const { t } = useTranslation();
   const { user, isLoading } = useAuth();
-  // console.log(role)
   if (isLoading) {
     return <ActivityIndicator />;
   }
 
-  const screenConfig = user?.user?.role === 'provider' ? providerScreens : consumerScreens;
+  const screenConfig = user?.role === 'provider' ? providerScreens : consumerScreens;
 
   return (
     <Stack.Navigator initialRouteName={user ? 'Dashboard' : 'Login'}>

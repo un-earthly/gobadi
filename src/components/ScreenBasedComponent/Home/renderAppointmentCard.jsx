@@ -6,7 +6,7 @@ import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 
 const { width } = Dimensions.get('window');
 
-const RenderAppointmentCard = (appointment) => {
+const RenderAppointmentCard = ({ appointment }) => {
     const [modalVisible, setModalVisible] = useState(false);
     const formattedDate = new Date(appointment.appointmentSchedule.date).toLocaleDateString('bn-BD');
     const { t } = useTranslation();

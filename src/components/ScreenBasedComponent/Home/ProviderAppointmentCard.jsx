@@ -12,7 +12,7 @@ const ProviderAppointmentCard = ({ appointment, onConfirm, onReject }) => {
     const { t } = useTranslation();
     const openModal = () => setModalVisible(true);
     const closeModal = () => setModalVisible(false);
-    console.log(`Appointment`,appointment)
+    console.log(`Appointment`, appointment)
     const handleConfirm = () => {
         Alert.alert(
             "অ্যাপয়েন্টমেন্ট নিশ্চিত করুন",

@@ -4,24 +4,13 @@ import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import { Appbar } from 'react-native-paper';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useAuth } from '../../context/AuthContext';
-import { getUserData } from '../../utility';
 
 const BOTTOM_APPBAR_HEIGHT = 80;
 
 const BottomBar = ({ navigation }) => {
     const { bottom } = useSafeAreaInsets();
     const { t } = useTranslation();
-    const { logout } = useAuth();
-    const [user, setUser] = useState(null);
-
-    useEffect(() => {
-        const fetchUserData = async () => {
-            const userData = await getUserData();
-            setUser(userData.user);
-        };
-        fetchUserData();
-    }, []);
-
+    const { logout, user} = useAuth();
     const menuItems = [
         { icon: 'home-outline', label: t('bottomBar.dashboard'), navigateTo: 'Dashboard' },
         ...(user?.role === "consumer" ? [{ icon: 'plus', label: t('bottomBar.service'), navigateTo: 'Menu' }] : []),

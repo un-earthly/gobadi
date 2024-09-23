@@ -2,7 +2,6 @@ import React from 'react';
 import { View, TouchableOpacity, FlatList } from 'react-native';
 import { Text, SegmentedButtons, Button } from 'react-native-paper';
 import { Calendar } from 'react-native-calendars';
-import { useAuth } from '../../../context/AuthContext';
 
 const RenderCalendar = ({
     calendarView,

@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useCallback } from 'react';
-import { View, Text, TextInput, FlatList, StyleSheet, TouchableOpacity, ActivityIndicator } from 'react-native';
+import { View, Text, TextInput, FlatList, StyleSheet, TouchableOpacity, ActivityIndicator, Image } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { db } from '../../../firebaseConfig';
 import { collection, addDoc, query, orderBy, onSnapshot, serverTimestamp, where, getFirestore } from 'firebase/firestore';
@@ -90,11 +90,12 @@ const ChatScreen = () => {
     };
     const renderAppointment = ({ item }) => (
         <TouchableOpacity onPress={() => setSelectedAppointment(item)} style={styles.appointmentItem}>
+           
             <Text style={styles.appointmentTitle}>{item.title}</Text>
             <Text style={styles.appointmentInfo}>
                 {user.role === 'provider' ? `${t('consumer')}: ${item.consumer.name}` : `${t('provider')}: ${item.provider.name}`}
             </Text>
-            <Text style={styles.appointmentInfo}>{t("appointment_date")}: {new Date(item.appointmentSchedule).toLocaleString()}</Text>
+            <Text style={styles.appointmentInfo}>{t("appointment_date")}: {new Date(`${item.appointmentSchedule.date}`).getFullYear() + "/" + new Date(`${item.appointmentSchedule.date}`).getDate() + "/" + new Date(`${item.appointmentSchedule.date}`).getMonth() + " " + `${item.appointmentSchedule.slot}`}</Text>
         </TouchableOpacity>
     );
 

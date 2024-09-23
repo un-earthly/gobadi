@@ -345,5 +345,6 @@
     "service_type": "সেবার মাধ্যম",
     "select_time_slot": "সময় নির্বাচন করুন",
     "select_service_types": "সেবার মাধ্যম নির্বাচন করুন",
-    "selected_slot": "নির্বাচিত স্লট"
+    "selected_slot": "নির্বাচিত স্লট",
+    "appointment_date": "অ্যাপয়েন্টমেন্টের সময়"
 }

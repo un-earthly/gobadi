@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { View, ScrollView, StyleSheet, ActivityIndicator } from 'react-native';
-import { Text, Avatar, Button, Card, Provider as PaperProvider, Switch } from 'react-native-paper';
+import { Text, Avatar, Button, Card, Provider as PaperProvider, Switch, SegmentedButtons } from 'react-native-paper';
 import { FontAwesome, MaterialIcons } from '@expo/vector-icons';
 import { useTranslation } from "react-i18next";
 import BottomBar from "../../components/common/BottomBar";
@@ -8,9 +8,10 @@ import { globalStyles } from "../../styles/Global.styles";
 import { getUserData } from "../../utility";
 import axios from "axios";
 import { userProfileUrl } from "../../api/routes";
-import RenderCalendar from '../../components/ScreenBasedComponent/Home/RenderCalender';
 import AppointmentModal from '../../components/ScreenBasedComponent/Home/AppointmentModal';
-import RenderAppointmentCard from '../../components/ScreenBasedComponent/Home/renderAppointmentCard';
+import ProviderAppointmentCard from '../../components/ScreenBasedComponent/Home/ProviderAppointmentCard';
+import { TouchableOpacity } from 'react-native';
+import { Calendar } from 'react-native-calendars';
 
 export default function ProviderDashboard({ navigation }) {
     const { t } = useTranslation();
@@ -25,7 +26,9 @@ export default function ProviderDashboard({ navigation }) {
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
 
-
+    useEffect(() => {
+        fetchTodayAppointments()
+    }, [selectedDate])
 
     const fetchData = async () => {
         setLoading(true);
@@ -94,8 +97,8 @@ export default function ProviderDashboard({ navigation }) {
         try {
             const { user } = await getUserData();
 
-            const response = await axios.get(`${process.env.EXPO_PUBLIC_BASE}/api/appointments/provider/${user._id}/day`);
-            console.log(response);
+            const response = await axios.get(`${process.env.EXPO_PUBLIC_BASE}/api/appointments/provider/${user._id}/day?date=${selectedDate}`);
+            console.log(response.data);
             setTodayAppointments(response.data);
 
         } catch (err) {
@@ -153,6 +156,28 @@ export default function ProviderDashboard({ navigation }) {
             </View>
         );
     }
+
+
+    const renderWeeklyButton = (date) => (
+        <TouchableOpacity
+            key={date}
+            style={styles.weeklyButton}
+            onPress={() => handleDateSelect({ dateString: date })}
+        >
+            <Text>{new Date(date).getDate()}</Text>
+        </TouchableOpacity>
+    );
+
+    const getWeekDates = () => {
+        const curr = new Date(selectedDate || new Date());
+        const week = [];
+        for (let i = 1; i <= 7; i++) {
+            let first = curr.getDate() - curr.getDay() + i;
+            let day = new Date(curr.setDate(first)).toISOString().slice(0, 10);
+            week.push(day);
+        }
+        return week;
+    };
     return (
         <PaperProvider>
             <View style={globalStyles.container}>
@@ -190,18 +215,58 @@ export default function ProviderDashboard({ navigation }) {
 
                     <View style={styles.section}>
                         <Text style={styles.sectionTitle}>{t("dashboard.appointments_overview")}</Text>
-
-                        <RenderCalendar
+                        <View style={styles.calendarContainer}>
+                            <SegmentedButtons
+                                value={calendarView}
+                                onValueChange={setCalendarView}
+                                buttons={[
+                                    { value: 'daily', label: t('dashboard.daily') },
+                                    { value: 'weekly', label: t('dashboard.weekly') },
+                                    { value: 'monthly', label: t('dashboard.monthly') },
+                                ]}
+                            />
+                            {calendarView === 'monthly' && (
+                                <Calendar
+                                    onDayPress={handleDateSelect}
+                                    markedDates={{
+                                        [selectedDate]: { selected: true, selectedColor: '#6D30ED' }
+                                    }}
+                                />
+                            )}
+                            {calendarView === 'weekly' && (
+                                <View style={styles.weeklyView}>
+                                    {getWeekDates().map(renderWeeklyButton)}
+                                </View>
+                            )}
+                            {calendarView === 'daily' && new Date() && (
+                                todayAppointments.length > 0 ? (
+                                    <View style={{ marginTop: 10 }}>
+                                        {todayAppointments.map((ac, idx) => <ProviderAppointmentCard key={idx} appointment={ac} onConfirm={() => { }} onReject={() => { }} />)}
+                                    </View>
+                                ) : (
+                                    <View style={{
+                                        flexDirection: "column",
+                                        gap: 10
+                                    }}>
+                                        <Text style={styles.noDataText}>{t("dashboard.appointmentHistoryComingSoon")}</Text>
+                                        <Button mode="contained" onPress={() => { navigation.navigate("Menu") }} style={styles.seeAllButton}>
+                                            {t("addNewAppointment")}
+                                        </Button>
+                                    </View>
+                                )
+                            )}
+                        </View>
+                        {/* <RenderCalendar
                             calendarView={calendarView}
                             setCalendarView={setCalendarView}
                             selectedDate={selectedDate}
                             handleDateSelect={handleDateSelect}
                             todayAppointments={todayAppointments}
-                            renderAppointmentCard={RenderAppointmentCard}
+                            renderAppointmentCard={ProviderAppointmentCard}
                             t={t}
                             styles={styles}
                             navigation={navigation}
-                        />
+                        /> */}
                     </View>
 
                     <View style={styles.section}>
@@ -334,6 +399,7 @@ const styles = StyleSheet.create({
         fontSize: 14,
         color: '#666',
         fontStyle: 'italic',
+        marginTop: 10
     },
     calendarContainer: {
         marginBottom: 20,

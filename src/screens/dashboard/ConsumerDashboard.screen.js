@@ -11,6 +11,7 @@ import { userProfileUrl } from "../../api/routes";
 import RenderCalendar from '../../components/ScreenBasedComponent/Home/RenderCalender';
 import AppointmentModal from '../../components/ScreenBasedComponent/Home/AppointmentModal';
 import renderAppointmentCard from '../../components/ScreenBasedComponent/Home/renderAppointmentCard';
+import RenderAppointmentCard from '../../components/ScreenBasedComponent/Home/renderAppointmentCard';
 
 // Static data for missing APIs
 const staticAppointments = [
@@ -236,7 +237,7 @@ export default function ConsumerDashboard({ navigation }) {
                         selectedDate={selectedDate}
                         handleDateSelect={handleDateSelect}
                         todayAppointments={appointments}
-                        renderAppointmentCard={renderAppointmentCard}
+                        renderAppointmentCard={e => <RenderAppointmentCard key={e._id} appointment={e} />}
                         t={t}
                         styles={styles}
                         navigation={navigation}
