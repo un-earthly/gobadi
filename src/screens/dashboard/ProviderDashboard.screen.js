@@ -10,6 +10,7 @@ import axios from "axios";
 import { userProfileUrl } from "../../api/routes";
 import RenderCalendar from '../../components/ScreenBasedComponent/Home/RenderCalender';
 import AppointmentModal from '../../components/ScreenBasedComponent/Home/AppointmentModal';
+import RenderAppointmentCard from '../../components/ScreenBasedComponent/Home/renderAppointmentCard';
 
 export default function ProviderDashboard({ navigation }) {
     const { t } = useTranslation();
@@ -94,7 +95,8 @@ export default function ProviderDashboard({ navigation }) {
             const { user } = await getUserData();
 
             const response = await axios.get(`${process.env.EXPO_PUBLIC_BASE}/api/appointments/provider/${user._id}/day`);
-            console.log(response.data)
+            console.log(response);
+            setTodayAppointments(response.data);
 
         } catch (err) {
             console.error("Error fetching reviews:", err);
@@ -106,15 +108,6 @@ export default function ProviderDashboard({ navigation }) {
         setModalVisible(true);
     };
 
-    const renderAppointmentCard = (appointment) => (
-        <Card key={appointment.id} style={styles.appointmentCard}>
-            <Card.Content>
-                <Text style={styles.appointmentTitle}>{appointment.title}</Text>
-                <Text>{t("time")}: {appointment.time}</Text>
-                <Text>{t("client")}: {appointment.clientName}</Text>
-            </Card.Content>
-        </Card>
-    );
 
     const renderReviewCard = (review) => (
         <Card key={review.id} style={styles.reviewCard}>
@@ -204,9 +197,10 @@ export default function ProviderDashboard({ navigation }) {
                             selectedDate={selectedDate}
                             handleDateSelect={handleDateSelect}
                             todayAppointments={todayAppointments}
-                            renderAppointmentCard={renderAppointmentCard}
+                            renderAppointmentCard={RenderAppointmentCard}
                             t={t}
                             styles={styles}
+                            navigation={navigation}
                         />
                     </View>
 

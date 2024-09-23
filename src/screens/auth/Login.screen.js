@@ -34,8 +34,8 @@ export default function LoginScreen({ navigation }) {
 
                     Toast.show({
                         type: 'success',
-                        text1: t("success.registrationSuccessful"),
-                        text2: `${t("success.registrationSuccessful")}`,
+                        text1: t("success.loginSuccessful"),
+                        text2: `${t("success.welcome")}`,
                         visibilityTime: 10000,
                         topOffset: 50,
                         position: 'top',

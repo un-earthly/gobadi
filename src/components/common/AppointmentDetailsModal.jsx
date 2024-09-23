@@ -1,33 +1,42 @@
-import { StyleSheet, View } from "react-native";
-import { Modal, Text } from "react-native";
+import React from 'react';
+import { StyleSheet, View, Modal, Text, ScrollView, Dimensions } from 'react-native';
+import { Button, Divider } from 'react-native-paper';
+import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 
-const AppointmentDetailsModal = ({ modalVisible, setModalVisible, appointmentDetails }) => {
+const { width } = Dimensions.get('window');
+
+const AppointmentDetailsModal = ({ modalVisible, setModalVisible }) => {
     return (
         <Modal
             animationType="slide"
             transparent={true}
             visible={modalVisible}
-            onRequestClose={() => setModalVisible(false)}
+            // onRequestClose={() => setModalVisible(false)}
         >
             <View style={styles.modalContainer}>
                 <View style={styles.modalContent}>
-                    <Text style={styles.modalTitle}>Appointment Confirmed!</Text>
-                    {appointmentDetails && (
-                        <>
-                            <Text>Payment Method: {appointmentDetails.paymentMethod}</Text>
-                            <Text>Service Type: {appointmentDetails.serviceBy.join(', ')}</Text>
-                            <Text>Time Slot: {appointmentDetails.selectedSlot}</Text>
-                            <Text>Specialization: {appointmentDetails.specialization}</Text>
-                        </>
-                    )}
+                    <ScrollView showsVerticalScrollIndicator={false}>
+                        <View style={styles.headerContainer}>
+                            <Icon name="check-circle" size={60} color="#4CAF50" />
+                            <Text style={styles.modalTitle}>অ্যাপয়েন্টমেন্ট নিশ্চিত হয়েছে!</Text>
+                        </View>
+
+
+                    </ScrollView>
+
+                    <Button
+                        mode="contained"
+                        onPress={() => setModalVisible(false)}
+                        style={styles.closeButton}
+                        labelStyle={styles.closeButtonText}
+                    >
+                        ঠিক আছে
+                    </Button>
                 </View>
             </View>
         </Modal>
-    )
+    );
 };
-
-export default AppointmentDetailsModal;
-
 
 
 const styles = StyleSheet.create({
@@ -40,32 +49,64 @@ const styles = StyleSheet.create({
     modalContent: {
         backgroundColor: 'white',
         padding: 20,
-        borderRadius: 10,
+        borderRadius: 20,
         alignItems: 'center',
-        width: '80%',
+        width: width * 0.9,
         maxWidth: 400,
+        maxHeight: '80%',
+    },
+    headerContainer: {
+        alignItems: 'center',
+        marginBottom: 20,
     },
     modalTitle: {
-        fontSize: 20,
+        fontSize: 24,
         fontWeight: 'bold',
-        marginBottom: 15,
+        marginTop: 15,
         color: '#333',
-    },
-    modalText: {
-        fontSize: 16,
-        marginBottom: 10,
         textAlign: 'center',
-        color: '#555',
+    },
+    divider: {
+        width: '100%',
+        marginVertical: 20,
+    },
+    detailsContainer: {
+        width: '100%',
+    },
+    infoRow: {
+        flexDirection: 'row',
+        alignItems: 'center',
+        marginBottom: 20,
+    },
+    icon: {
+        marginRight: 15,
+    },
+    infoContent: {
+        flex: 1,
+    },
+    label: {
+        fontSize: 16,
+        color: '#888',
+        marginBottom: 4,
+    },
+    value: {
+        fontSize: 18,
+        color: '#333',
+        fontWeight: '600',
     },
     closeButton: {
         marginTop: 20,
-        padding: 10,
+        paddingVertical: 10,
+        paddingHorizontal: 20,
         backgroundColor: '#6D30ED',
-        borderRadius: 5,
+        borderRadius: 10,
+        width: '100%',
     },
     closeButtonText: {
         color: 'white',
-        fontSize: 16,
+        fontSize: 18,
         fontWeight: 'bold',
     },
 });
+
+export default AppointmentDetailsModal;

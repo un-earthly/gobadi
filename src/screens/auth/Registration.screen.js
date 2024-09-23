@@ -170,16 +170,14 @@ const RegistrationScreen = ({ navigation }) => {
 
         try {
             const { personalInfo, consumerInfo, providerInfo, security } = formData;
-
-            // Constructing registrationData to match the Mongoose model
             const registrationData = {
                 mobile: personalInfo.mobile,
                 password: security.password,
                 role: formData.role,
                 name: personalInfo.name,
-                age: personalInfo.age ? Number(personalInfo.age) : null,
+                age: personalInfo.age ,
                 district: personalInfo.district,
-                avatar: personalInfo.photo || null,
+                avatar: personalInfo.photo,
                 nid: personalInfo.nid,
                 designation: formData.role === 'provider' ? providerInfo.designation : null,
                 organization: formData.role === 'provider' ? providerInfo.organization : null,

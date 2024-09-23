@@ -1,7 +1,7 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { useTranslation } from "react-i18next";
-import { Image, ScrollView, StyleSheet, TouchableOpacity, View } from "react-native";
-import { Avatar, Badge, Card, Text, Divider } from "react-native-paper";
+import { Dimensions, FlatList, Image, ScrollView, StyleSheet, TouchableOpacity, View } from "react-native";
+import { Avatar, Badge, Card, Text, Divider, Button, Icon } from "react-native-paper";
 import { FontAwesome, MaterialIcons } from '@expo/vector-icons';
 import BottomBar from "../../components/common/BottomBar";
 import { globalStyles } from "../../styles/Global.styles";
@@ -10,6 +10,7 @@ import axios from "axios";
 import { userProfileUrl } from "../../api/routes";
 import RenderCalendar from '../../components/ScreenBasedComponent/Home/RenderCalender';
 import AppointmentModal from '../../components/ScreenBasedComponent/Home/AppointmentModal';
+import renderAppointmentCard from '../../components/ScreenBasedComponent/Home/renderAppointmentCard';
 
 // Static data for missing APIs
 const staticAppointments = [
@@ -129,34 +130,35 @@ const ReviewCard = ({ review }) => {
         </Card>
     );
 };
-const renderAppointmentCard = (appointment) => (
-    <Card key={appointment.id} style={styles.appointmentCard}>
-        <Card.Content>
-            <Text style={styles.appointmentTitle}>{appointment.title}</Text>
-            <Text>{t("time")}: {appointment.time}</Text>
-            <Text>{t("client")}: {appointment.clientName}</Text>
-        </Card.Content>
-    </Card>
-);
+const { width: screenWidth } = Dimensions.get('window');
+
 export default function ConsumerDashboard({ navigation }) {
     const { t } = useTranslation();
     const [appointments, setAppointments] = useState([]);
+    const [history, sethistory] = useState([]);
     const [userData, setUserData] = useState(null);
     const [reviews, setReviews] = useState([]);
     const [calendarView, setCalendarView] = useState('daily');
     const [selectedDate, setSelectedDate] = useState('');
-    const [todayAppointments, setTodayAppointments] = useState([]);
     const [modalVisible, setModalVisible] = useState(false);
+    const flatListRef = useRef(null);
+    const renderItem = ({ item }) => {
+        console.log(item)
+        return <Image source={{ uri: item }} style={{
+            width: screenWidth * 0.75,
+            height: '100%',
+            borderRadius: 8,
+            marginHorizontal: 5,
+        }} />
+    };
 
     const fetchUserData = async () => {
         try {
             const { user } = await getUserData();
-            console.log({ user })
             if (user?._id) {
                 const userId = user._id;
                 const userResponse = await axios.get(userProfileUrl(userId));
                 setUserData(userResponse.data);
-                setAppointments(staticAppointments);
             } else {
                 console.error("User data or user ID not found in storage");
             }
@@ -175,6 +177,18 @@ export default function ConsumerDashboard({ navigation }) {
             console.error("Error fetching reviews:", err);
         }
     };
+    const fetchTodayAppointments = async () => {
+        try {
+            const { user } = await getUserData();
+
+            const response = await axios.get(`${process.env.EXPO_PUBLIC_BASE}/api/appointments/consumer/${user._id}/day`);
+            console.log(response.data)
+
+            setAppointments(response.data)
+        } catch (err) {
+            console.error("Error fetching reviews:", err);
+        }
+    };
     const handleDateSelect = (date) => {
         setSelectedDate(date.dateString);
         setModalVisible(true);
@@ -183,7 +197,9 @@ export default function ConsumerDashboard({ navigation }) {
         fetchUserData();
         fetchReviews();
     }, []);
-
+    useEffect(() => {
+        fetchTodayAppointments()
+    }, [appointments]);
     return (
         <View style={globalStyles.container}>
             <ScrollView>
@@ -213,19 +229,17 @@ export default function ConsumerDashboard({ navigation }) {
                 <View style={styles.sectionContainer}>
                     <View style={styles.sectionHeader}>
                         <Text style={styles.sectionTitle}>{t("dashboard.upcomingAppointments")}</Text>
-                        {/* <TouchableOpacity onPress={() => navigation.navigate("Appointments")}>
-                            <Text style={styles.seeAll}>{t("dashboard.seeAll")}</Text>
-                        </TouchableOpacity> */}
                     </View>
                     <RenderCalendar
                         calendarView={calendarView}
                         setCalendarView={setCalendarView}
                         selectedDate={selectedDate}
                         handleDateSelect={handleDateSelect}
-                        todayAppointments={todayAppointments}
+                        todayAppointments={appointments}
                         renderAppointmentCard={renderAppointmentCard}
                         t={t}
                         styles={styles}
+                        navigation={navigation}
                     />
                 </View>
 
@@ -242,15 +256,26 @@ export default function ConsumerDashboard({ navigation }) {
                     </View>
                 </View>
 
-                <View style={styles.sectionContainer}>
+                {/* <View style={styles.sectionContainer}>
                     <View style={styles.sectionHeader}>
                         <Text style={styles.sectionTitle}>{t("dashboard.appointmentHistory")}</Text>
-                        {/* <TouchableOpacity onPress={() => navigation.navigate("AppointmentHistory")}>
-                            <Text style={styles.seeAll}>{t("dashboard.seeAll")}</Text>
-                        </TouchableOpacity> */}
+
                     </View>
-                    <Text style={styles.noDataText}>{t("dashboard.appointmentHistoryComingSoon")}</Text>
-                </View>
+                    <View >
+                        {history.length > 0 ?
+                            history.map(renderAppointmentCard)
+                            : <View style={{
+                                flexDirection: "column",
+                                gap: 10
+                            }}>
+                                <Text style={styles.noDataText}>{t("dashboard.appointmentHistoryComingSoon")}</Text>
+                                <Button mode="contained" onPress={() => { navigation.navigate("Menu") }} style={styles.seeAllButton}>
+                                    {t("addNewAppointment")}
+                                </Button>
+                            </View>
+                        }
+                    </View>
+                </View> */}
             </ScrollView>
             <BottomBar navigation={navigation} />
 

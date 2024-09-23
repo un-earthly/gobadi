@@ -4,13 +4,16 @@ import { Modal, Text, Button, Card } from 'react-native-paper';
 import { MaterialIcons } from '@expo/vector-icons';
 import axios from 'axios';
 import { getUserData } from '../../../utility';
+import renderAppointmentCard from './renderAppointmentCard';
+import RenderAppointmentCard from './renderAppointmentCard';
 
 const AppointmentModal = ({ visible, onDismiss, selectedDate, t, navigation }) => {
-    const [appointments, setAppointments] = useState([])
+    const [appointments, setAppointments] = useState([]);
+    const [user, setUser] = useState([]);
     const fetchTodayAppointments = async () => {
         try {
             const { user } = await getUserData();
-
+            setUser(user)
             const response = await axios.get(`${process.env.EXPO_PUBLIC_BASE}/api/appointments/${user.role}/${user._id}/day`);
             console.log(response.data);
             setAppointments(response.data)
@@ -22,37 +25,27 @@ const AppointmentModal = ({ visible, onDismiss, selectedDate, t, navigation }) =
     useEffect(() => {
         fetchTodayAppointments()
     }, [])
-    const renderAppointmentCard = (appointment) => (
-        <Card key={appointment.id} style={styles.card}>
-            <Card.Content>
-                <View style={styles.cardHeader}>
-                    <View>
-                        <Text style={styles.cardTitle}>{appointment?.title}</Text>
-                        <Text style={styles.cardSubtitle}>{appointment?.time}</Text>
-                    </View>
-                    <View style={[styles.statusBadge, { backgroundColor: appointment?.status === 'Confirmed' ? '#E7F3FF' : '#FFF4E5' }]}>
-                        <Text style={[styles.statusText, { color: appointment?.status === 'Confirmed' ? '#1E88E5' : '#FFA000' }]}>{appointment.status}</Text>
-                    </View>
-                </View>
-                <View style={styles.cardDetails}>
-                    <MaterialIcons name="person" size={16} color="#757575" />
-                    <Text style={styles.cardDetailText}>{appointment?.clientName}</Text>
-                </View>
-            </Card.Content>
-        </Card>
-    );
 
     return (
         <Modal visible={visible} onDismiss={onDismiss} contentContainerStyle={styles.modalContainer}>
             <View style={styles.modalContent}>
                 <Text style={styles.modalTitle}>{selectedDate} {t("dashboard.appointments_for")} </Text>
                 <ScrollView style={styles.scrollView}>
-                    {appointments?.length > 0 ? appointments.map(renderAppointmentCard) :
+                    {appointments?.length > 0 ? (
+                        appointments.map((appointment) => (
+                            <RenderAppointmentCard
+                                key={appointment._id}
+                                appointment={appointment}
+                            />
+                        ))
+                    ) :
                         <Text style={styles.noDataText}>{t("dashboard.no_appointments_today")}</Text>}
                 </ScrollView>
-                <Button mode="contained" onPress={() => { navigation.navigate("Appointments") }} style={styles.seeAllButton}>
+                {user.role === "consumer" ? <Button mode="contained" onPress={() => { navigation.navigate("Menu") }} style={styles.seeAllButton}>
+                    {t("addNewAppointment")}
+                </Button> : <Button mode="contained" onPress={() => { navigation.navigate("Appointments") }} style={styles.seeAllButton}>
                     {t("dashboard.see_all_appointments")}
-                </Button>
+                </Button>}
                 <Button mode="outlined" onPress={onDismiss} style={styles.closeButton}>
                     {t("dashboard.close")}
                 </Button>

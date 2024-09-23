@@ -7,42 +7,27 @@ import { signInWithCustomToken, getAuth } from 'firebase/auth';
 import axios from 'axios';
 import { Button, IconButton, Surface } from 'react-native-paper';
 import { useTranslation } from 'react-i18next';
+import { useAuth } from '../../context/AuthContext';
 
 const ChatScreen = () => {
     const [appointments, setAppointments] = useState([]);
     const [selectedAppointment, setSelectedAppointment] = useState(null);
     const [messages, setMessages] = useState([]);
     const [newMessage, setNewMessage] = useState('');
-    const [userData, setUserData] = useState(null);
     const [isLoading, setIsLoading] = useState(true);
     const [error, setError] = useState(null);
     const { t } = useTranslation()
-    useEffect(() => {
-        const fetchUserData = async () => {
-            try {
-                const storedUserData = await AsyncStorage.getItem('userData');
-                if (storedUserData) {
-                    const parsedUserData = JSON.parse(storedUserData);
-                    setUserData(parsedUserData);
-                }
-            } catch (error) {
-                console.error('Error fetching user data:', error);
-                setError('Failed to load user data. Please try again.');
-            } finally {
-                setIsLoading(false);
-            }
-        };
-        fetchUserData();
-    }, []);
-
+    const { user: data } = useAuth()
+    const user = data.user
     const fetchAppointments = useCallback(async () => {
-        if (!userData) return;
+        if (!user) return;
         setIsLoading(true);
         setError(null);
         try {
-            const endpoint = userData.role === 'provider' ? 'provider' : 'consumer';
+            const endpoint = user.role === 'provider' ? 'provider' : 'consumer';
+            console.log(`${process.env.EXPO_PUBLIC_BASE}/api/rooms/${endpoint}`, user)
             const response = await axios.get(`${process.env.EXPO_PUBLIC_BASE}/api/rooms/${endpoint}`, {
-                headers: { Authorization: userData.token }
+                headers: { Authorization: data.token }
             });
             setAppointments(response.data);
         } catch (error) {
@@ -51,23 +36,23 @@ const ChatScreen = () => {
         } finally {
             setIsLoading(false);
         }
-    }, [userData]);
+    }, [user]);
 
     useEffect(() => {
-        if (userData) {
+        if (user) {
             fetchAppointments();
         }
-    }, [userData, fetchAppointments]);
+    }, [user, fetchAppointments]);
 
     useEffect(() => {
-        if (selectedAppointment && userData) {
+        if (selectedAppointment && user) {
             const unsubscribe = setupChatListener(selectedAppointment._id, (updatedMessages) => {
                 setMessages(updatedMessages);
             });
 
             return () => unsubscribe();
         }
-    }, [selectedAppointment, userData]);
+    }, [selectedAppointment, user]);
 
     const setupChatListener = (appointmentId, callback) => {
         const q = query(
@@ -85,17 +70,16 @@ const ChatScreen = () => {
         }, (error) => {
             console.error("Error listening to messages: ", error);
             setError('Unable to load messages. Please check your connection and permissions.');
-            // Optionally, you could implement a retry mechanism here
         });
     };
     const sendMessage = async () => {
-        if (newMessage.trim() && selectedAppointment && userData) {
+        if (newMessage.trim() && selectedAppointment && user) {
             try {
                 await addDoc(collection(db, 'chats', selectedAppointment._id, 'messages'), {
                     text: newMessage,
                     createdAt: serverTimestamp(),
-                    userId: userData._id,
-                    userRole: userData.role
+                    userId: user._id,
+                    userRole: user.role
                 });
                 setNewMessage('');
             } catch (error) {
@@ -108,14 +92,14 @@ const ChatScreen = () => {
         <TouchableOpacity onPress={() => setSelectedAppointment(item)} style={styles.appointmentItem}>
             <Text style={styles.appointmentTitle}>{item.title}</Text>
             <Text style={styles.appointmentInfo}>
-                {userData.role === 'provider' ? `${t('consumer')}: ${item.consumer.name}` : `${t('provider')}: ${item.provider.name}`}
+                {user.role === 'provider' ? `${t('consumer')}: ${item.consumer.name}` : `${t('provider')}: ${item.provider.name}`}
             </Text>
             <Text style={styles.appointmentInfo}>{t("appointment_date")}: {new Date(item.appointmentSchedule).toLocaleString()}</Text>
         </TouchableOpacity>
     );
 
     const renderMessage = ({ item }) => {
-        const isCurrentUser = userData && item.userId === userData._id;
+        const isCurrentUser = user && item.userId === user._id;
         return (
             <View style={[
                 styles.messageContainer,
@@ -186,7 +170,7 @@ const ChatScreen = () => {
                     onChangeText={setNewMessage}
                     placeholder="Type a message"
                 />
-                <Button mode="contained" onPress={sendMessage} disabled={!userData || newMessage.trim() === ''}>
+                <Button mode="contained" onPress={sendMessage} disabled={!user || newMessage.trim() === ''}>
                     Send
                 </Button>
             </View>

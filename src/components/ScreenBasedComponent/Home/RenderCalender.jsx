@@ -1,7 +1,8 @@
 import React from 'react';
 import { View, TouchableOpacity, FlatList } from 'react-native';
-import { Text, SegmentedButtons } from 'react-native-paper';
+import { Text, SegmentedButtons, Button } from 'react-native-paper';
 import { Calendar } from 'react-native-calendars';
+import { useAuth } from '../../../context/AuthContext';
 
 const RenderCalendar = ({
     calendarView,
@@ -11,7 +12,8 @@ const RenderCalendar = ({
     todayAppointments,
     renderAppointmentCard,
     t,
-    styles
+    styles,
+    navigation
 }) => {
     const renderWeeklyButton = (date) => (
         <TouchableOpacity
@@ -33,7 +35,6 @@ const RenderCalendar = ({
         }
         return week;
     };
-
     return (
         <View style={styles.calendarContainer}>
             <SegmentedButtons
@@ -65,9 +66,13 @@ const RenderCalendar = ({
                     </View>
                 ) : (
                     <View style={{
-                        marginTop: 10
+                        flexDirection: "column",
+                        gap: 10
                     }}>
-                        <Text style={styles.noDataText}>{t("dashboard.no_appointments_today")}</Text>
+                        <Text style={styles.noDataText}>{t("dashboard.appointmentHistoryComingSoon")}</Text>
+                        <Button mode="contained" onPress={() => { navigation.navigate("Menu") }} style={styles.seeAllButton}>
+                            {t("addNewAppointment")}
+                        </Button>
                     </View>
                 )
             )}

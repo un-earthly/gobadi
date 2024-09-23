@@ -7,14 +7,15 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import BottomBar from "../../components/common/BottomBar";
 import { getUserData } from '../../utility';
 import axios from 'axios';
+import ProviderAppointmentCard from '../../components/ScreenBasedComponent/Home/ProviderAppointmentCard';
 
 export default function AppointmentsPage({ navigation }) {
     const { t } = useTranslation();
     const [serviceRequests, setServiceRequests] = useState([]);
     const [selectedRequest, setSelectedRequest] = useState(null);
     const [isModalVisible, setIsModalVisible] = useState(false);
-    const [appointmentDate, setAppointmentDate] = useState(new Date());
-    const [appointmentTime, setAppointmentTime] = useState(new Date());
+    // const [appointmentDate, setAppointmentDate] = useState(new Date());
+    // const [appointmentTime, setAppointmentTime] = useState(new Date());
     const [showDatePicker, setShowDatePicker] = useState(false);
     const [showTimePicker, setShowTimePicker] = useState(false);
     const [isLoading, setIsLoading] = useState(true);
@@ -59,23 +60,28 @@ export default function AppointmentsPage({ navigation }) {
         setAppointmentTime(currentTime);
     };
 
-    const confirmAppointment = async () => {
+    const confirmAppointment = async (id) => {
         try {
             setIsLoading(true);
-            const appointmentSchedule = new Date(
-                appointmentDate.getFullYear(),
-                appointmentDate.getMonth(),
-                appointmentDate.getDate(),
-                appointmentTime.getHours(),
-                appointmentTime.getMinutes()
-            );
-
             const updateData = {
-                appointmentSchedule,
                 status: 'scheduled'
             };
-            const url = `${process.env.EXPO_PUBLIC_BASE}/api/appointments/${selectedRequest._id}/`
+            const url = `${process.env.EXPO_PUBLIC_BASE}/api/appointments/${id}/`
             await axios.put(url, updateData);
+
+            setIsModalVisible(false);
+            fetchData();
+        } catch (error) {
+            console.error('Error updating appointment:', error);
+        } finally {
+            setIsLoading(false);
+        }
+    };
+    const cancelAppointment = async (id) => {
+        try {
+            setIsLoading(true);
+            const url = `${process.env.EXPO_PUBLIC_BASE}/api/appointments/${id}/cancel`
+            await axios.put(url);
 
             setIsModalVisible(false);
             fetchData();
@@ -96,26 +102,11 @@ export default function AppointmentsPage({ navigation }) {
 
                     {
                         (serviceRequests && serviceRequests.length > 0) ? serviceRequests?.map((request) => (
-                            <Card key={request._id} style={styles.card}>
-                                <Card.Content>
-                                    <Text style={styles.cardTitle}>{request.title}</Text>
-                                    <Text>{t("category")}: {request.category}</Text>
-                                    <Text>{t("sub_category")}: {request.subCategory}</Text>
-                                    <Text>{t("status")}: {t(`status_${request.status}`)}</Text>
-                                    <Text>{t("fee")}: {request.fee}</Text>
-                                    {request.appointmentSchedule && (
-                                        <Text>{t("scheduled_for")}: {new Date(request?.appointmentSchedule).toLocaleString()}</Text>
-                                    )}
-                                </Card.Content>
-                                <Card.Actions>
-                                    <Button
-                                        mode="contained"
-                                        onPress={() => handleScheduleAppointment(request)}
-                                    >
-                                        {request.appointmentSchedule ? t("reschedule_appointment") : t("schedule_appointment")}
-                                    </Button>
-                                </Card.Actions>
-                            </Card>
+                            <ProviderAppointmentCard
+                                appointment={request}
+                                onConfirm={(appointmentId) => confirmAppointment(appointmentId)}
+                                onReject={(appointmentId) => cancelAppointment(appointmentId)}
+                            />
                         )) : <Surface style={styles.surface}>
                             <View style={styles.content}>
                                 <IconButton icon="alert-circle-outline" size={40} color="#6200ea" />
@@ -138,7 +129,7 @@ export default function AppointmentsPage({ navigation }) {
                             <IconButton icon="close" size={24} onPress={() => setIsModalVisible(false)} />
                         </View>
 
-                        <View style={styles.dateTimeContainer}>
+                        {/* <View style={styles.dateTimeContainer}>
                             <View style={styles.dateTimeItem}>
                                 <Text style={styles.dateTimeLabel}>{t("date")}</Text>
                                 <Button
@@ -180,7 +171,7 @@ export default function AppointmentsPage({ navigation }) {
                                     />
                                 )}
                             </View>
-                        </View>
+                        </View> */}
 
                         <View style={styles.modalActions}>
                             <Button mode="outlined" onPress={() => setIsModalVisible(false)} style={styles.actionButton}>

@@ -70,7 +70,9 @@
         "atLeastOneVeterinary": "কমপক্ষে একটি ভেটেরিনারি ফিল্ড প্রয়োজন"
     },
     "success": {
-        "registrationSuccessful": "নিবন্ধন সফল হয়েছে!"
+        "registrationSuccessful": "নিবন্ধন সফল হয়েছে!",
+        "loginSuccessful": "লগইন সফল হয়েছে",
+        "welcome": "আপনার অ্যাকাউন্টে স্বাগতম!"
     },
     "consumerInfo.veterinaryPreferences": "পছন্দের ভেটেরিনারি নির্বাচন করুন",
     "dashboard": {
@@ -338,8 +340,10 @@
     "experience": "অভিজ্ঞতা (বছর)",
     "organization": "প্রতিষ্ঠান",
     "livestockCount": "গবাদি সংখ্যা",
-    "audio_call":"অডিও কল",
-    "chat":"চ্যাট",
-    "service_type":"সেবার মাধ্যম",
-    "select_time_slot":"সময় নির্বাচন করুন"
+    "audio_call": "অডিও কল",
+    "chat": "চ্যাট",
+    "service_type": "সেবার মাধ্যম",
+    "select_time_slot": "সময় নির্বাচন করুন",
+    "select_service_types": "সেবার মাধ্যম নির্বাচন করুন",
+    "selected_slot": "নির্বাচিত স্লট"
 }

@@ -9,7 +9,11 @@ import BottomBar from "../../components/common/BottomBar";
 import axios from 'axios';
 import { getUserData } from '../../utility';
 import { bangladeshDistricts } from '../../../districts';
-import { Dropdown } from 'react-native-paper-dropdown';
+import Toast from 'react-native-toast-message';
+import * as ImagePicker from 'expo-image-picker';
+import { storage } from '../../../firebaseConfig';
+import { getDownloadURL, ref, uploadBytes } from "firebase/storage";
+
 
 export default function ProfileScreen({ navigation }) {
     const { t } = useTranslation();
@@ -24,6 +28,8 @@ export default function ProfileScreen({ navigation }) {
     const [snackbarVisible, setSnackbarVisible] = useState(false);
     const [snackbarMessage, setSnackbarMessage] = useState('');
     const [selectedDistrict, setSelectedDistrict] = useState(null);
+    const [uploading, setUploading] = useState(false);
+
     const getBanglaDistrictName = (districtName) => {
         const district = bangladeshDistricts.find(d => d.name === districtName);
         return district ? district.name_bn : districtName;
@@ -37,6 +43,7 @@ export default function ProfileScreen({ navigation }) {
             setIsLoading(true);
             const { user } = await getUserData();
             const response = await axios.get(`${process.env.EXPO_PUBLIC_BASE}/api/user/${user._id}`);
+            console.log(response)
             setUser(response.data);
             setUpdatedUser(response.data);
             if (response.data.district) {
@@ -73,7 +80,6 @@ export default function ProfileScreen({ navigation }) {
         try {
             setIsLoading(true);
 
-            // Send both oldPassword and newPassword in the request
             await axios.put(`${process.env.EXPO_PUBLIC_BASE}/api/auth/${user._id}/password`, {
                 oldPassword: currentPassword,  // Add the old password here
                 newPassword
@@ -88,7 +94,43 @@ export default function ProfileScreen({ navigation }) {
             setIsLoading(false);
         }
     };
+    const pickImage = async () => {
+        try {
+            let result = await ImagePicker.launchImageLibraryAsync({
+                mediaTypes: ImagePicker.MediaTypeOptions.Images,
+                allowsMultipleSelection: true,
+                aspect: [4, 3],
+                quality: 1,
+            });
+            if (!result.canceled) {
+                const photoUrl = await uploadImage(result.assets[0].uri);
+                setUpdatedUser({ ...updatedUser, avatar: photoUrl });
+            }
 
+        } catch (error) {
+            console.error('Error picking or uploading image:', error);
+            Toast.show({
+                type: 'error',
+                text1: 'Image Upload Failed',
+                text2: error.message || 'There was an error uploading the image.',
+            });
+        }
+    };
+    const uploadImage = async (uri) => {
+        try {
+            const response = await fetch(uri);
+            const blob = await response.blob();
+            const filename = `${Date.now()}-photo.jpg`;
+            const storageRef = ref(storage, filename);
+
+            await uploadBytes(storageRef, blob);
+            const url = await getDownloadURL(storageRef);
+            return url;
+        } catch (error) {
+            console.error('Error uploading image:', error);
+            throw error;
+        }
+    };
 
     const showSnackbar = (message) => {
         setSnackbarMessage(message);
@@ -100,6 +142,14 @@ export default function ProfileScreen({ navigation }) {
             <View style={styles.modalContent}>
                 <ScrollView contentContainerStyle={styles.modalScrollView}>
                     <Text style={styles.modalTitle}>{t("update_profile")}</Text>
+                    <View style={styles.imageUploadContainer}>
+                        {updatedUser.avatar ? (
+                            <Image source={{ uri: updatedUser.avatar }} style={styles.avatar} />
+                        ) : <TouchableOpacity onPress={pickImage}>
+                            <Text>{t("upload_image")}</Text>
+                        </TouchableOpacity>}
+                        {uploading && <ActivityIndicator size="small" color="#6200ee" />}
+                    </View>
                     {renderInput("name", "text", "face-man")}
                     {renderInput("nid", "numeric", "card-account-details")}
                     {renderInput("mobile", "phone-pad", "phone")}
@@ -117,12 +167,13 @@ export default function ProfileScreen({ navigation }) {
                     {user?.role === 'consumer' && (
                         <>
                             {renderInput("fish", "numeric", "fish")}
-                            {renderInput("hen", "numeric", "chicken")}
+                            {renderInput("hen", "numeric", "turkey")}
                             {renderInput("cow", "numeric", "cow")}
                             {renderInput("goat", "numeric", "goat")}
                             {renderInput("duck", "numeric", "duck")}
                         </>
                     )}
+
 
                     <View style={styles.modalButtons}>
                         <Button onPress={() => setProfileModalVisible(false)} style={styles.cancelButton} labelStyle={styles.buttonText}>
@@ -194,10 +245,24 @@ export default function ProfileScreen({ navigation }) {
         <SafeAreaView style={globalStyles.container}>
             <ScrollView contentContainerStyle={[globalStyles.bottom_bar_height, styles.scrollViewContent]}>
                 <View style={styles.profileContainer}>
-                    <Image
-                        style={styles.avatar}
-                        source={{ uri: user?.avatar || 'https://randomuser.me/api/portraits/men/64.jpg' }}
-                    />
+                    {
+                        user.avatar ? <Image
+                            style={styles.avatar}
+                            source={{ uri: user.avatar }}
+                        /> : <View style={{
+                            backgroundColor: "lightgrey",
+                            height: 100,
+                            width: 100,
+                            borderRadius: 50,
+                            justifyContent: "center",
+                            alignItems: "center",
+                            marginBottom: 20,
+                            padding: 14,
+
+                        }}>
+                            <Text style={{ textAlign: "center" }}>{t("not_added")}</Text>
+                        </View>
+                    }
                     <Text style={styles.name}>{user?.name}</Text>
                     <Text style={styles.role}>{t(user?.role)}</Text>
 
@@ -205,7 +270,7 @@ export default function ProfileScreen({ navigation }) {
                         {renderInfoItem("nid", user?.nid, "card-account-details")}
                         {renderInfoItem("mobile", user?.mobile, "phone")}
                         {renderInfoItem("district", getBanglaDistrictName(user?.district), "map-marker")}
-                        {renderInfoItem("age", user?.age, "calendar")}
+                        {renderInfoItem("age", user.age, "calendar")}
 
                         {user?.role === 'provider' && (
                             <>
@@ -219,7 +284,7 @@ export default function ProfileScreen({ navigation }) {
                         {user?.role === 'consumer' && (
                             <>
                                 {renderInfoItem("fish", user?.fish, "fish")}
-                                {renderInfoItem("hen", user?.hen, "chicken")}
+                                {renderInfoItem("hen", user?.hen, "turkey")}
                                 {renderInfoItem("cow", user?.cow, "cow")}
                                 {renderInfoItem("goat", user?.goat, "goat")}
                                 {renderInfoItem("duck", user?.duck, "duck")}
@@ -299,10 +364,9 @@ const styles = StyleSheet.create({
         alignItems: 'center',
     },
     avatar: {
-        width: 120,
-        height: 120,
-        borderRadius: 60,
-        marginBottom: 16,
+        width: 100,
+        height: 100,
+        borderRadius: 100
     },
     name: {
         fontSize: 28,
@@ -416,4 +480,16 @@ const styles = StyleSheet.create({
     snackbar: {
         backgroundColor: '#333',
     },
+    imageUploadContainer: {
+        flexDirection: 'column',
+        marginBottom: 20,
+        height: 100,
+        width: 100,
+        borderRadius: 100,
+        backgroundColor: "lightgrey",
+        justifyContent: "center",
+        alignItems: "center",
+        marginHorizontal: "auto"
+    },
+
 });
