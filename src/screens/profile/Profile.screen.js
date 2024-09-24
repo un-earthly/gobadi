@@ -144,7 +144,9 @@ export default function ProfileScreen({ navigation }) {
                     <Text style={styles.modalTitle}>{t("update_profile")}</Text>
                     <View style={styles.imageUploadContainer}>
                         {updatedUser.avatar ? (
-                            <Image source={{ uri: updatedUser.avatar }} style={styles.avatar} />
+                            <TouchableOpacity onPress={pickImage}>
+                                <Image source={{ uri: updatedUser.avatar }} style={styles.avatar} />
+                            </TouchableOpacity>
                         ) : <TouchableOpacity onPress={pickImage}>
                             <Text>{t("upload_image")}</Text>
                         </TouchableOpacity>}

@@ -2,6 +2,7 @@ import React, { createContext, useState, useContext, useEffect } from 'react';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import axios from 'axios';
 import { loginUrl, registerUrl } from '../api/routes';
+import { getUserData } from '../utility';
 
 const AuthContext = createContext();
 
@@ -16,9 +17,9 @@ export const AuthProvider = ({ children }) => {
 
     const checkUserLoggedIn = async () => {
         try {
-            const userData = await AsyncStorage.getItem('userData');
+            const userData = await getUserData()
             if (userData) {
-                setUser(JSON.parse(userData));
+                setUser(userData);
             }
         } catch (error) {
             console.error('Error checking user login status:', error);
@@ -33,7 +34,7 @@ export const AuthProvider = ({ children }) => {
             const response = await axios.post(loginUrl, { mobile, password });
             console.log(response.data)
             await AsyncStorage.setItem("userData", JSON.stringify(response.data));
-            setUser(response.data.user);
+            setUser(response.data);
             return response.data;
         } catch (error) {
             throw new Error(error.response?.data?.message || "Login failed");
@@ -47,7 +48,7 @@ export const AuthProvider = ({ children }) => {
         try {
             const response = await axios.post(registerUrl, formData);
             await AsyncStorage.setItem("userData", JSON.stringify(response.data));
-            setUser(response.data.user);
+            setUser(response.data);
             return response.data;
         } catch (error) {
             throw new Error(error.response?.data?.message || "Registration failed");

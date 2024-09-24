@@ -10,11 +10,11 @@ const BOTTOM_APPBAR_HEIGHT = 80;
 const BottomBar = ({ navigation }) => {
     const { bottom } = useSafeAreaInsets();
     const { t } = useTranslation();
-    const { logout, user} = useAuth();
+    const { logout, user } = useAuth();
     const menuItems = [
         { icon: 'home-outline', label: t('bottomBar.dashboard'), navigateTo: 'Dashboard' },
-        ...(user?.role === "consumer" ? [{ icon: 'plus', label: t('bottomBar.service'), navigateTo: 'Menu' }] : []),
-        ...(user?.role === "provider" ? [{ icon: 'calendar-outline', label: t('bottomBar.appointments'), navigateTo: 'Appointments' }] : []),
+        ...(user?.user?.role === "consumer" ? [{ icon: 'plus', label: t('bottomBar.service'), navigateTo: 'Menu' }] : []),
+        ...(user?.user?.role === "provider" ? [{ icon: 'calendar-outline', label: t('bottomBar.appointments'), navigateTo: 'Appointments' }] : []),
         { icon: 'chat-outline', label: t('bottomBar.message'), navigateTo: 'Chat' },
         { icon: 'account-outline', label: t('bottomBar.profile'), navigateTo: 'Profile' },
         { icon: 'logout', label: t('bottomBar.logout'), action: logout }

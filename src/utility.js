@@ -7,7 +7,6 @@ export async function getUserData() {
             // We have data!!
 
             const parsedUserData = JSON.parse(userData);
-            // console.log('Retrieved user data:', parsedUserData);
             return parsedUserData;
         }
     } catch (error) {
